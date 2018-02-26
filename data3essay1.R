@@ -249,10 +249,6 @@ w2d <- read_tsv("data/UKDA-6614-tab/tab/us_w2/b_indresp.tab")
 # Value = -7.0	Label = proxy respondent
 # Value = -2.0	Label = refused
 
-
-##### Selecting variables #####
-vars <- c('pidp', 'sex', 'racel', 'ukborn', 'plbornc', 'dvage', 'qfhigh', 'fenow', 'fednt', 'fedlik', 'paedqf', 'maedqf', 'jbstat', 'jspayu', 'jspytx')
-
 ##### Joining waves #####
 # Firstly, we create a character vector with the full paths to the individual indresp files from all the waves.
 
@@ -273,6 +269,9 @@ files <- files[str_detect(files, "us")]
 
 files
 
+# Selecting variables
+vars <- c('pidp', 'sex', 'racel', 'ukborn', 'plbornc', 'dvage', 'qfhigh', 'fenow', 'fednt', 'fedlik', 'paedqf', 'maedqf', 'jbstat', 'jspayu', 'jspytx')
+
 # Create the data file with all 7 waves with the selected variables
 
 for (i in 1:7) {
@@ -283,12 +282,11 @@ for (i in 1:7) {
     d <- data  
   }
   else {
-    d <- full_join(all7, data, by = "pidp")
+    d <- full_join(d, data, by = "pidp")
   }
   rm(data)
 }
 
-rm(d)
-
+# Saving this data in myData
 write_tsv(d, "myData/d.tab")
-
+##### Cleaning data #####
