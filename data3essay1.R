@@ -7,7 +7,7 @@ library(readr)
 library(readxl)
 
 ##### github #####
-cc
+
 
 ##### Loading data #####
 
