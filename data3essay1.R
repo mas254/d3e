@@ -17,18 +17,22 @@ library(readxl)
 
 ##### Variable names #####
 # pidp - participant number
+# a_qfhigh - highest qualification
+# a_qfhigh_dv - highest qualification reported
+
+# a_fenow - in further education
+# a_edasp - highest level exam like to get b/f leave school
+# a_jbstat - job status
+# a_paedqf - father's qualifications
+# a_maedqf - mother's qualifications
+
+# a_fedlik - likelihood of entering further education
+# a_fednt - reason no further education
 # a_sex - sex
 # a_racel - ethnicity
 # a_ukborn - born in UK
 # a_plbornc - country of birth
 # a_dvage - age
-# a_qfhigh - highest qualification
-# a_fenow - in further education
-# a_fednt - reason no further education
-# a_fedlik - likelihood of entering further education
-# a_paedqf - father's qualifications
-# a_maedqf - mother's qualifications
-# a_jbstat - job status
 # a_jspayu - average income
 # a_jspytx - income figure given before or after tax
 
@@ -266,7 +270,7 @@ files <- files[str_detect(files, "us")]
 files
 
 # Selecting variables
-vars <- c('pidp', 'sex', 'racel', 'ukborn', 'plbornc', 'dvage', 'qfhigh', 'fenow', 'fednt', 'fedlik', 'paedqf', 'maedqf', 'jbstat', 'jspayu', 'jspytx')
+vars <- c('pidp', 'qfhigh_dv', 'sclfsat1')
 vars2 <- c('pidp', 'sex', 'racel', 'ukborn', 'plbornc', 'dvage', 'qfhigh', 'fenow', 'fednt', 'fedlik', 'paedqf', 'maedqf', 'jbstat', 'jspayu', 'jspytx', 'a_jbsat', 'a_sclfsat1', 'a_sclfsat2', 'a_sclfsat7', 'a_sclfsato', 'a_scopngbha', 'a_scopngbhf', 'a_scopngbhg', 'a_scopngbhh', 'a_scwemwbf', 'a_scriskb')
 
 # Create the data file with all 7 waves with the selected variables
@@ -285,10 +289,13 @@ for (i in 1:7) {
 }
 
 # Saving this data in myData
+
 write_tsv(d, "myData/d.tab")
 ##### Cleaning data #####
 # Cleaning the data so wave number is a variable and we can see the answers for each variable for each person with ease.
+
 require(reshape2)
+
 dmelt <- d %>%
   melt(id = "pidp") %>%
   separate(variable, into = c("wave", "variable"), sep = "_") %>%
@@ -296,29 +303,24 @@ dmelt <- d %>%
 
 # Changing negative values to NA
 dna <- dmelt %>%
-  mutate(dvage = ifelse(dvage > 0, dvage, NA)) %>%
-  mutate(sex = ifelse(sex > 0, sex, NA)) %>% 
-  mutate(racel = ifelse(racel > 0, racel, NA)) %>% 
-  mutate(ukborn = ifelse(ukborn > 0, ukborn, NA)) %>% 
-  mutate(plbornc = ifelse(plbornc > 0, plbornc, NA)) %>% 
-  mutate(qfhigh = ifelse(qfhigh > 0, qfhigh, NA)) %>% 
-  mutate(fenow = ifelse(fenow > 0, fenow, NA)) %>% 
-  mutate(fednt = ifelse(fednt > 0, fednt, NA)) %>% 
-  mutate(fedlik = ifelse(fedlik > 0, fedlik, NA)) %>% 
-  mutate(paedqf = ifelse(paedqf > 0, paedqf, NA)) %>% 
-  mutate(maedqf = ifelse(maedqf > 0, maedqf, NA)) %>% 
-  mutate(jbstat = ifelse(jbstat > 0, jbstat, NA)) %>% 
-  mutate(jspayu = ifelse(jspayu > 0, jspayu, NA)) %>% 
-  mutate(jspytx = ifelse(jspytx > 0, jspytx, NA))
-  
-table(dna$jspayu)
-table(dna$jspytx)
+  mutate(qfhigh = ifelse(qfhigh > 0, qfhigh, NA)) %>%
+  mutate(qfhigh = ifelse(qfhigh < 96, qfhigh, NA)) %>%
+  mutate(sclfsat1 = ifelse(sclfsat1 > 0, sclfsat1, NA))
 
+# Changing numerical responses to labels
 dclean <- dna %>%
-  mutate(sex = recode(sex, "1" = "male", "2" = "female")) %>%
-  mutate(sex = factor(sex))
+  mutate(qfhigh = recode(qfhigh, "1" = "Higher degree", "2" = "1st degree or equivalent", "3" = "Diploma in he", "4" = "Teaching qual not pgce",
+                         "5" = "Nursing/other med qual", "6" = "Other higher degree", "7" = "A level", "8" = "Welsh baccalaureate",
+                         "9" = "I'nationl baccalaureate", "10" = "AS level", "11" = "Highers (scot)", "12" = "Cert 6th year studies",
+                         "13" = "GCSE/O level", "14" = "CSE", "15" = "Standard/o/lower", "16" = "Other school cert")) %>%
+  mutate(qfhigh = factor(qfhigh)) %>%
+  mutate(sclfsat1 = recode(sclfsat1, "1" = "completely dissatisfied", "2" = "mostly dissatisfied",
+                         "3" = "somewhat dissatisfied", "4" = "neither satisfied or dissatisfied",
+                         "5" = "somewhat satisfied", "6" = "mostly satisfied", "7" = "completely satisfied")) %>%
+  mutate(sclfsat1 = factor(sclfsat1))
 
-# Basically I have a format for creating a clean dataset, with edited varible values so I can progress to making clear visulisations
-# and move on further to some regression to work out the causation between factors.
-# I need help deciding how exactly to structure my question - what variables am I looking at, what am I measuring (this has to be over a period
-# of more than a couple of waves - preferably all 7).
+# Checking recoding has worked
+table(dclean$qfhigh[dclean$wave == 'g'])
+table(dclean$sclfsat1[dclean$wave == 'g'])
+
+# Next up - analysis!
