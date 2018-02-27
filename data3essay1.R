@@ -15,10 +15,6 @@ library(readxl)
 ##### github #####
 # https://github.com/mas254/d3e
 
-##### Loading data #####
-w1d <- read_tsv("data/UKDA-6614-tab/tab/us_w1/a_indresp.tab")
-w2d <- read_tsv("data/UKDA-6614-tab/tab/us_w2/b_indresp.tab")
-
 ##### Variable names #####
 # pidp - participant number
 # a_sex - sex
@@ -227,7 +223,7 @@ w2d <- read_tsv("data/UKDA-6614-tab/tab/us_w2/b_indresp.tab")
 # Value = 9.0	Label = on a government training scheme
 # Value = 10.0	Label = unpaid worker in family business
 # Value = 97.0	Label = doing something else
-#   Value = -1.0	Label = don't know
+# Value = -1.0	Label = don't know
 # Value = -9.0	Label = missing
 # Value = -8.0	Label = inapplicable
 # Value = -7.0	Label = proxy respondent
@@ -271,6 +267,7 @@ files
 
 # Selecting variables
 vars <- c('pidp', 'sex', 'racel', 'ukborn', 'plbornc', 'dvage', 'qfhigh', 'fenow', 'fednt', 'fedlik', 'paedqf', 'maedqf', 'jbstat', 'jspayu', 'jspytx')
+vars2 <- c('pidp', 'sex', 'racel', 'ukborn', 'plbornc', 'dvage', 'qfhigh', 'fenow', 'fednt', 'fedlik', 'paedqf', 'maedqf', 'jbstat', 'jspayu', 'jspytx', 'a_jbsat', 'a_sclfsat1', 'a_sclfsat2', 'a_sclfsat7', 'a_sclfsato', 'a_scopngbha', 'a_scopngbhf', 'a_scopngbhg', 'a_scopngbhh', 'a_scwemwbf', 'a_scriskb')
 
 # Create the data file with all 7 waves with the selected variables
 
@@ -290,3 +287,38 @@ for (i in 1:7) {
 # Saving this data in myData
 write_tsv(d, "myData/d.tab")
 ##### Cleaning data #####
+# Cleaning the data so wave number is a variable and we can see the answers for each variable for each person with ease.
+require(reshape2)
+dmelt <- d %>%
+  melt(id = "pidp") %>%
+  separate(variable, into = c("wave", "variable"), sep = "_") %>%
+  dcast(pidp + wave ~ variable)
+
+# Changing negative values to NA
+dna <- dmelt %>%
+  mutate(dvage = ifelse(dvage > 0, dvage, NA)) %>%
+  mutate(sex = ifelse(sex > 0, sex, NA)) %>% 
+  mutate(racel = ifelse(racel > 0, racel, NA)) %>% 
+  mutate(ukborn = ifelse(ukborn > 0, ukborn, NA)) %>% 
+  mutate(plbornc = ifelse(plbornc > 0, plbornc, NA)) %>% 
+  mutate(qfhigh = ifelse(qfhigh > 0, qfhigh, NA)) %>% 
+  mutate(fenow = ifelse(fenow > 0, fenow, NA)) %>% 
+  mutate(fednt = ifelse(fednt > 0, fednt, NA)) %>% 
+  mutate(fedlik = ifelse(fedlik > 0, fedlik, NA)) %>% 
+  mutate(paedqf = ifelse(paedqf > 0, paedqf, NA)) %>% 
+  mutate(maedqf = ifelse(maedqf > 0, maedqf, NA)) %>% 
+  mutate(jbstat = ifelse(jbstat > 0, jbstat, NA)) %>% 
+  mutate(jspayu = ifelse(jspayu > 0, jspayu, NA)) %>% 
+  mutate(jspytx = ifelse(jspytx > 0, jspytx, NA))
+  
+table(dna$jspayu)
+table(dna$jspytx)
+
+dclean <- dna %>%
+  mutate(sex = recode(sex, "1" = "male", "2" = "female")) %>%
+  mutate(sex = factor(sex))
+
+# Basically I have a format for creating a clean dataset, with edited varible values so I can progress to making clear visulisations
+# and move on further to some regression to work out the causation between factors.
+# I need help deciding how exactly to structure my question - what variables am I looking at, what am I measuring (this has to be over a period
+# of more than a couple of waves - preferably all 7).
