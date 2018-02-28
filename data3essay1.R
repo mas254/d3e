@@ -324,3 +324,11 @@ table(dclean$qfhigh[dclean$wave == 'g'])
 table(dclean$sclfsat1[dclean$wave == 'g'])
 
 # Next up - analysis!
+
+##### Visualising relationships #####
+summary(dclean)
+summary(dclean$qfhigh)
+summary(dclean$sclfsat1)
+
+# Plot education levels against health satisfaction for wave 1 & wave 7 barplot, then all waves in line graph
+# Able to do a radar?
