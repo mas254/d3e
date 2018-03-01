@@ -14,6 +14,8 @@ library(readxl)
 require(reshape2)
 library(plyr)
 library("fmsb")
+install.packages("arm")
+library(arm)
 
 ##### github #####
 # https://github.com/mas254/d3e
@@ -309,9 +311,31 @@ B$wave<-1
 names(B)[1] <- "Wave"
 row.names(B) <- "Wave"
 B <- t(a)
+for(g in dcont){
+  dcont$wave
+  print(tapply(dcont$sclfsat1, dcont$qfhigh, mean)) 
+}
 
+tapply(dcont$sclfsat1, dcont$qfhigh, mean)
 # Making a line-graph for changes in average wellbeing in education categories over the waves
 ggplot(line, aes(x = Wave, y = Wellbeing, group = Education)) +
   geom_line()
 
 # Remove 'other' qualification level from dataset
+
+##### Analysis #####
+w1 <- subset(dcont, wave == 'a',
+             select = c(qfhigh, sclfsat1))
+
+w7 <- subset(dcont, wave == 'g',
+             select = c(qfhigh, sclfsat1))
+
+model <- glm(sclfsat1 ~ factor(qfhigh), data = w1)
+model2 <- glm(sclfsat1 ~ factor(qfhigh), data = w7)
+summary(model2)
+
+invlogit(predict(model, data.frame(qfhigh)))
+invlogit(5.17639)
+
+# https://stats.idre.ucla.edu/other/mult-pkg/whatstat/
+# Could show predicted for each education level? Probs not.
