@@ -11,10 +11,21 @@ library(tidyverse)
 library(data.table)
 library(readr)
 library(readxl)
+require(reshape2)
+library(plyr)
+library("fmsb")
 
 ##### github #####
 # https://github.com/mas254/d3e
 
+##### Ideas #####
+# Could also segregate data by age to look to see if there was less differentiation between wellbeing and education in the youth
+# If there was, this would suggest that structures are of less importance
+# If there was still a large contrast, then it suggests levels of cultural capital are still important for wellbeing
+
+# Could also look at parents education levels.
+
+# Do I exclude people still in education?
 ##### Variable names #####
 # pidp - participant number
 # a_qfhigh - highest qualification
@@ -28,92 +39,6 @@ library(readxl)
 
 # a_fedlik - likelihood of entering further education
 # a_fednt - reason no further education
-# a_sex - sex
-# a_racel - ethnicity
-# a_ukborn - born in UK
-# a_plbornc - country of birth
-# a_dvage - age
-# a_jspayu - average income
-# a_jspytx - income figure given before or after tax
-
-##### Variable levels for sex #####
-# Value label information for a_sex
-# Value = 1.0	Label = male
-# Value = 2.0	Label = female
-# Value = -1.0	Label = don't know
-# Value = -9.0	Label = missing
-# Value = -8.0	Label = inapplicable
-# Value = -2.0	Label = refused
-
-##### Variable levels for race #####
-# Value label information for a_racelo_code
-# Value = 1.0	Label = british/english/scottish/welsh/northern irish
-# Value = 2.0	Label = irish
-# Value = 3.0	Label = gypsy or irish traveller
-# Value = 4.0	Label = any other white background
-# Value = 5.0	Label = white and black caribbean
-# Value = 6.0	Label = white and black african
-# Value = 7.0	Label = white and asian
-# Value = 8.0	Label = any other mixed background
-# Value = 9.0	Label = indian
-# Value = 10.0	Label = pakistani
-# Value = 11.0	Label = bangladeshi
-# Value = 12.0	Label = chinese
-# Value = 13.0	Label = any other asian background
-# Value = 14.0	Label = caribbean
-# Value = 15.0	Label = african
-# Value = 16.0	Label = any other black background
-# Value = 17.0	Label = arab
-# Value = 97.0	Label = not elsewhere codable
-# Value = -2.0	Label = refused
-# Value = -9.0	Label = missing
-# Value = -8.0	Label = inapplicable
-# Value = -7.0	Label = proxy respondent
-# Value = -1.0	Label = don't know
-
-##### Variable levels for birthplace #####
-# Value label information for a_ukborn
-# Value = 1.0	Label = yes, england
-# Value = 2.0	Label = yes, scotland
-# Value = 3.0	Label = yes, wales
-# Value = 4.0	Label = yes, northern ireland
-# Value = 5.0	Label = not born in the uk
-# Value = -1.0	Label = don't know
-# Value = -9.0	Label = missing
-# Value = -8.0	Label = inapplicable
-# Value = -7.0	Label = proxy respondent
-# Value = -2.0	Label = refused
-
-# Value label information for a_plbornc
-# Value = 5.0	Label = republic of ireland
-# Value = 6.0	Label = france
-# Value = 7.0	Label = germany
-# Value = 8.0	Label = italy
-# Value = 9.0	Label = spain
-# Value = 10.0	Label = poland
-# Value = 11.0	Label = cyprus
-# Value = 12.0	Label = turkey
-# Value = 13.0	Label = australia
-# Value = 14.0	Label = new zealand
-# Value = 15.0	Label = canada
-# Value = 16.0	Label = u.s.a
-# Value = 17.0	Label = china/hong kong
-# Value = 18.0	Label = india
-# Value = 19.0	Label = pakistan
-# Value = 20.0	Label = bangladesh
-# Value = 21.0	Label = sri lanka
-# Value = 22.0	Label = kenya
-# Value = 23.0	Label = ghana
-# Value = 24.0	Label = nigeria
-# Value = 25.0	Label = uganda
-# Value = 26.0	Label = south africa
-# Value = 27.0	Label = jamaica
-# Value = 97.0	Label = other country
-# Value = -2.0	Label = refused
-# Value = -9.0	Label = missing
-# Value = -8.0	Label = inapplicable
-# Value = -7.0	Label = proxy respondent
-# Value = -1.0	Label = don't know
 
 ##### Variable levels for age #####
 # Value label information for a_dvage
@@ -233,22 +158,6 @@ library(readxl)
 # Value = -7.0	Label = proxy respondent
 # Value = -2.0	Label = refused
 
-# Value label information for a_jspayu
-# Value = -8.0	Label = inapplicable
-# Value = -7.0	Label = proxy respondent
-# Value = -2.0	Label = refused
-# Value = -1.0	Label = don't know
-# Value = -9.0	Label = missing
-
-# Value label information for a_jspytx
-# Value = 1.0	Label = yes, before tax
-# Value = 2.0	Label = no, after tax
-# Value = -1.0	Label = don't know
-# Value = -9.0	Label = missing
-# Value = -8.0	Label = inapplicable
-# Value = -7.0	Label = proxy respondent
-# Value = -2.0	Label = refused
-
 ##### Joining waves #####
 # Firstly, we create a character vector with the full paths to the individual indresp files from all the waves.
 
@@ -257,11 +166,9 @@ files <- dir("data/UKDA-6614-tab/tab",
              recursive = TRUE,
              full.names=TRUE)
 
-# This includes files from the BHPS that we don't need so let us drop them. We can use the function
-# **str_detect()** (part of the stringr package) to identify files from the Understanding Society only and then keep only
-# their names in the vector **files**.
-
-str_detect(files, "us")
+# This includes files from the BHPS that we don't need so we must drop them. We can use the function
+# str_detect() to identify files from the Understanding Society only and then keep only
+# their names in the vector "files".
 
 files <- files[str_detect(files, "us")]
 
@@ -271,10 +178,8 @@ files
 
 # Selecting variables
 vars <- c('pidp', 'qfhigh_dv', 'sclfsat1')
-vars2 <- c('pidp', 'sex', 'racel', 'ukborn', 'plbornc', 'dvage', 'qfhigh', 'fenow', 'fednt', 'fedlik', 'paedqf', 'maedqf', 'jbstat', 'jspayu', 'jspytx', 'a_jbsat', 'a_sclfsat1', 'a_sclfsat2', 'a_sclfsat7', 'a_sclfsato', 'a_scopngbha', 'a_scopngbhf', 'a_scopngbhg', 'a_scopngbhh', 'a_scwemwbf', 'a_scriskb')
 
 # Create the data file with all 7 waves with the selected variables
-
 for (i in 1:7) {
   varsToSelect <- paste(letters[i], vars, sep = "_")
   varsToSelect <- c("pidp", varsToSelect)
@@ -289,46 +194,124 @@ for (i in 1:7) {
 }
 
 # Saving this data in myData
-
 write_tsv(d, "myData/d.tab")
 ##### Cleaning data #####
 # Cleaning the data so wave number is a variable and we can see the answers for each variable for each person with ease.
-
-require(reshape2)
 
 dmelt <- d %>%
   melt(id = "pidp") %>%
   separate(variable, into = c("wave", "variable"), sep = "_") %>%
   dcast(pidp + wave ~ variable)
 
-# Changing negative values to NA
+# Changing negative and other 'unknown' values to NA
 dna <- dmelt %>%
   mutate(qfhigh = ifelse(qfhigh > 0, qfhigh, NA)) %>%
   mutate(qfhigh = ifelse(qfhigh < 96, qfhigh, NA)) %>%
   mutate(sclfsat1 = ifelse(sclfsat1 > 0, sclfsat1, NA))
 
-# Changing numerical responses to labels
-dclean <- dna %>%
-  mutate(qfhigh = recode(qfhigh, "1" = "Higher degree", "2" = "1st degree or equivalent", "3" = "Diploma in he", "4" = "Teaching qual not pgce",
-                         "5" = "Nursing/other med qual", "6" = "Other higher degree", "7" = "A level", "8" = "Welsh baccalaureate",
-                         "9" = "I'nationl baccalaureate", "10" = "AS level", "11" = "Highers (scot)", "12" = "Cert 6th year studies",
-                         "13" = "GCSE/O level", "14" = "CSE", "15" = "Standard/o/lower", "16" = "Other school cert")) %>%
+# Changing numerical responses to labels (this is to make our descriptive analysis easier to do, as well as making the results clearer).
+# We have also combined equivalent qualifications, so we have fewer variables, again making our descriptive analysis easier to do and
+# clearer to interpret.
+dclean <- na.omit(dna) %>%
+  mutate(qfhigh = recode(qfhigh, "1" = "1-Higher degree", "2" = "2-Degree/equiv", "3" = "3-Higher ed",
+                         "4" = "3-Higher ed", "5" = "3-Higher ed", "6" = "3-Higher ed",
+                         "7" = "4-A level/equiv", "8" = "4-A level/equiv", "9" = "4-A level/equiv",
+                         "10" = "5-AS level/equiv", "11" = "5-AS level/equiv", "12" = "5-AS level/equiv",
+                         "13" = "6-GCSE/equiv", "14" = "7-CSE", "15" = "6-GCSE/equiv", "16" = "8-Other school cert")) %>%
   mutate(qfhigh = factor(qfhigh)) %>%
-  mutate(sclfsat1 = recode(sclfsat1, "1" = "completely dissatisfied", "2" = "mostly dissatisfied",
-                         "3" = "somewhat dissatisfied", "4" = "neither satisfied or dissatisfied",
-                         "5" = "somewhat satisfied", "6" = "mostly satisfied", "7" = "completely satisfied")) %>%
+  mutate(sclfsat1 = recode(sclfsat1, "1" = "1-completely dissatisfied", "2" = "2-mostly dissatisfied",
+                         "3" = "3-somewhat dissatisfied", "4" = "4-neither satisfied or dissatisfied",
+                         "5" = "5-somewhat satisfied", "6" = "6-mostly satisfied", "7" = "7-completely satisfied")) %>%
   mutate(sclfsat1 = factor(sclfsat1))
 
-# Checking recoding has worked
-table(dclean$qfhigh[dclean$wave == 'g'])
-table(dclean$sclfsat1[dclean$wave == 'g'])
 
-# Next up - analysis!
+# This is for treating the wellbeing score as a continuous variable
+# When we do our inferential analysis, we will need to treat "sclfsat1" as a continuous, not a factor variable,
+# thus using the numerical, rather than categorical, values. I THINK, MUST CHECK THIS
+dcont <- na.omit(dna) %>%
+  mutate(qfhigh = recode(qfhigh, "1" = "1-Higher degree", "2" = "2-Degree/equiv", "3" = "3-Higher ed",
+                         "4" = "3-Higher ed", "5" = "3-Higher ed", "6" = "3-Higher ed",
+                         "7" = "4-A level/equiv", "8" = "4-A level/equiv", "9" = "4-A level/equiv",
+                         "10" = "5-AS level/equiv", "11" = "5-AS level/equiv", "12" = "5-AS level/equiv",
+                         "13" = "6-GCSE/equiv", "14" = "7-CSE", "15" = "6-GCSE/equiv", "16" = "8-Other school cert")) %>%
+  mutate(qfhigh = factor(qfhigh))
+
+# Why does this not work?
+dclean <- dna %>%
+  mutate(qfhigh = recode(qfhigh, "1" = "Higher degree", "2" = "1st degree or equivalent", c("3", "4", "5", "6") = "Higher qualification",
+                         c("7", "8", "9") = "A level or equivalent", c("10", "11", "12") = "AS Level or equivalent",
+                         c("13", "15") = "GCSE or equivalent", "14" = "CSE", "16" = "Other school cert")) %>%
+  mutate(qfhigh = factor(qfhigh)) %>%
+  mutate(sclfsat1 = recode(sclfsat1, "1" = "completely dissatisfied", "2" = "mostly dissatisfied",
+                           "3" = "somewhat dissatisfied", "4" = "neither satisfied or dissatisfied",
+                           "5" = "somewhat satisfied", "6" = "mostly satisfied", "7" = "completely satisfied")) %>%
+  mutate(sclfsat1 = factor(sclfsat1))
+
+# Removing unnecessary data files. These are taking up memory and will not be needed for the rest of the analysis.
+rm(d, dmelt, dna)
+
 
 ##### Visualising relationships #####
-summary(dclean)
-summary(dclean$qfhigh)
-summary(dclean$sclfsat1)
+# First, to explore our data, we will look at the distribution of wellbeing in each wave to see for any overall trends NOT SURE TO KEEP THIS
+ggplot(dclean, aes(x = wave, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
 
-# Plot education levels against health satisfaction for wave 1 & wave 7 barplot, then all waves in line graph
-# Able to do a radar?
+# Comparing wave 1 against wave 7 - we are going to look at either end of the data, as this is where the most obvious differences should be.
+
+# Tables of numbers of education levels and wellbeing.
+table(W1$sclfsat1, W1$qfhigh)
+table(W7$sclfsat1, W7$qfhigh)
+
+# Subsetting the waves.
+W1 <- subset(dclean, wave == 'a',
+                  select = c(qfhigh, sclfsat1))
+
+W7 <- subset(dclean, wave == 'g',
+             select = c(qfhigh, sclfsat1))
+
+# Looking at differences across time
+ggplot(W1, aes(x = qfhigh, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+  coord_polar()
+
+ggplot(W7, aes(qfhigh, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+  coord_polar()
+
+# Showing proportions of wellbeing in education levels for these two waves
+prop.table(table(W1$qfhigh))
+prop.table(table(W7$qfhigh))
+
+# Looking at the differences in the two most extreme education levels
+High <- subset(dclean, qfhigh == '1-Higher degree',
+                     select = c(wave, sclfsat1))
+
+CSE <- subset(dclean, qfhigh == '7-CSE',
+                     select = c(wave, sclfsat1))
+
+ggplot(High, aes(x = wave, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+  coord_polar()
+
+ggplot(CSE, aes(x = wave, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+  coord_polar()
+
+# Make a data frame like excel graph
+a <- data.frame(tapply(W1$sclfsat1, W1$qfhigh, mean), b, c, e, f, g, h)
+b <- data.frame(tapply(W2$sclfsat1, W2$qfhigh, mean))
+c<- data.frame(tapply(W3$sclfsat1, W3$qfhigh, mean))
+e<-data.frame(tapply(W4$sclfsat1, W4$qfhigh, mean))
+f<-data.frame(tapply(W5$sclfsat1, W5$qfhigh, mean))
+g<-data.frame(tapply(W6$sclfsat1, W6$qfhigh, mean))
+h<-data.frame(tapply(W7$sclfsat1, W7$qfhigh, mean))
+B$wave<-1
+names(B)[1] <- "Wave"
+row.names(B) <- "Wave"
+B <- t(a)
+
+# Making a line-graph for changes in average wellbeing in education categories over the waves
+ggplot(line, aes(x = Wave, y = Wellbeing, group = Education)) +
+  geom_line()
+
+# Remove 'other' qualification level from dataset
