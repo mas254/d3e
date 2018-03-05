@@ -318,7 +318,7 @@ for(g in dcont){
 
 tapply(dcont$sclfsat1, dcont$qfhigh, mean)
 # Making a line-graph for changes in average wellbeing in education categories over the waves
-ggplot(line, aes(x = Wave, y = Wellbeing, group = Education)) +
+ggplot(line, aes(x = Wave, y = Wellbeing, group = Education, colour = Education)) +
   geom_line()
 
 # Remove 'other' qualification level from dataset
