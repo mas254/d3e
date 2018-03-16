@@ -14,7 +14,6 @@ library(readxl)
 require(reshape2)
 library(plyr)
 library("fmsb")
-install.packages("arm")
 library(arm)
 
 ##### github #####
@@ -330,9 +329,32 @@ w1 <- subset(dcont, wave == 'a',
 w7 <- subset(dcont, wave == 'g',
              select = c(qfhigh, sclfsat1))
 
-model <- glm(sclfsat1 ~ factor(qfhigh), data = w1)
-model2 <- glm(sclfsat1 ~ factor(qfhigh), data = w7)
-summary(model2)
+# model <- lm(sclfsat1 ~ factor(qfhigh) * wave, data = w1)
+
+model2 <- lm(sclfsat1 ~ factor(qfhigh), data = w7)
+
+
+# income
+# satisfaction with health
+
+library(plm)
+
+# plm(sclfsat1 ~ income, by = pidp)
+
+# fimnnet_dv - income
+# https://www.google.co.uk/search?q=foixed+effects+analysis+in+R+with+plm&ie=utf-8&oe=utf-8&client=firefox-b-ab&gfe_rd=cr&dcr=0&ei=hIGiWpyJC_SA8QeDtYngDw
+# http://stat545.com/topics.html
+
+summary(model)
+
+# Model 1 (wave 1)
+invlogit(-0.03536)
+invlogit(-0.22636)
+invlogit(-0.19884)
+invlogit(-0.16323)
+invlogit(-0.25037)
+invlogit(-0.44132)
+invlogit(-0.33048)
 
 invlogit(predict(model, data.frame(qfhigh)))
 invlogit(5.17639)
