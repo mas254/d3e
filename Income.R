@@ -110,20 +110,22 @@ dcontI <- na.omit(dnaI) %>%
   mutate(sex = factor(sex))
 
 # Removing unnecessary data files. These are taking up memory and will not be needed for the rest of the analysis.
-rm(dI, dmeltI, dnaI)
+rm(dI, dmeltI, dnaI, W1, W7)
 
 ##### Visualising Relationships #####
 # First, to explore our data, we will look at the distribution of wellbeing in each wave to see for any overall trends
 ggplot(dcleanI, aes(x = wave, fill = sclfsat1)) +
   geom_bar(position = 'fill')
 
-# We are going to take a closer look at the first and last waves of the data
-W1 <- subset(dcleanI, wave == 'a',
-             select = c(qfhigh, sclfsat1))
+# We are going to take a closer look at the first, middle and last waves of the data
+# Subsetting the data frame into waves 1, 4 and 7
+Wc <- subset(dcleanI, wave == c('a', 'd', 'g'),
+             select = c(1:7))
 
-W7 <- subset(dcleanI, wave == 'a',
-             select = c(qfhigh, sclfsat1))
+# Visualising the spread of wellbeing in each wave
+ggplot(Wc, aes(x = wave, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
 
-prop.table(table(dcleanI$sclfsat1[dcleanI$wave == 'a']))
-prop.table(table(dcleanI$sclfsat1[dcleanI$wave == 'g']))
+# Do average wellbeing score next (make and use data frame).
 
+# Then split by education and income (for individual waves).
