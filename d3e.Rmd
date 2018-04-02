@@ -1,0 +1,8 @@
+---
+title: "d3e"
+author: '660032036'
+date: "2 April 2018"
+output: pdf_document
+---
+
+Mardown doc for d3e
