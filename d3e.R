@@ -272,13 +272,13 @@ dcontI %>%
 
 # Analysing by net income
 library(broom)
-UndSocLong %>%
-  filter(fimnnet_dv > 0) %>%
+
+dcontI %>%
+  filter(fimnnet > 0) %>%
   nest(-year) %>%
   mutate(Quantiles = map(data, ~ quantile(.$fimnnet_dv,
-                                          c(0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99)))) %>%
-  unnest(map(Quantiles, tidy)) %>%
-  ggplot(aes(x = year, y = x, colour = names)) +
+                                          c(0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99, 0.999)))) %>% 
+  ggplot(aes(x = year, y = fimnnet, colour = names)) +
   geom_point(na.rm = TRUE) + 
   geom_line(na.rm = TRUE) +
   ylab("Net monthly income") + 
