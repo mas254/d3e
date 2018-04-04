@@ -270,20 +270,54 @@ dcontI %>%
   geom_point() +
   geom_line()
 
-# Analysing by net income
-library(broom)
-
 dcontI %>%
-  filter(fimnnet > 0) %>%
-  nest(-year) %>%
-  mutate(Quantiles = map(data, ~ quantile(.$fimnnet_dv,
-                                          c(0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99, 0.999)))) %>% 
-  ggplot(aes(x = year, y = fimnnet, colour = names)) +
-  geom_point(na.rm = TRUE) + 
-  geom_line(na.rm = TRUE) +
-  ylab("Net monthly income") + 
-  xlab("Year")
+  group_by(year, fimnnet) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = fimnnet)) +
+  geom_point() +
+  geom_line()
 
+# Analysing by net income
+quantile(dcontI$fimnnet, seq(0, 1, 0.2))
+
+t <- dcontI %>% 
+  mutate(income = ifelse(fimnnet >= -17741.3379 & fimnnet <= 518.9808, 20,
+                                ifelse(fimnnet > 518.9808 & fimnnet <= 1051.6666, 40,
+                                       ifelse(fimnnet > 1051.6666 & fimnnet <= 1502.5000, 60,
+                                              ifelse(fimnnet > 1502.5000 & fimnnet <= 2150.7295, 80,
+                                                     ifelse(fimnnet > 2150.7295 & fimnnet <= 15000.0000, 100, NA)))))) %>% 
+  mutate(income = as.factor(income))
+
+t %>%
+  group_by(year, income) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = income)) +
+  geom_point() +
+  geom_line()
+
+quantile(dcontI$fimnnet[dcontI$fimnnet > 0], seq(0, 1, 0.2))
+
+s <- dcontI %>% 
+  filter(fimnnet > 0) %>% 
+  mutate(income = ifelse(fimnnet >= 1.506607e-04 & fimnnet <= 6.706440e+02, 20,
+                                ifelse(fimnnet > 6.706440e+02 & fimnnet <= 1.125058e+03, 40,
+                                       ifelse(fimnnet > 1.125058e+03 & fimnnet <= 1.567589e+03, 60,
+                                              ifelse(fimnnet > 1.567589e+03 & fimnnet <= 2.200000e+03, 80,
+                                                     ifelse(fimnnet > 2.200000e+03 & fimnnet <= 1.500000e+04, 100, NA)))))) %>% 
+  mutate(income = as.factor(income))
+
+s %>%
+  group_by(year, income) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = income)) +
+  geom_point() +
+  geom_line()
 ##### Analysis #####
 
 library(plm)
@@ -332,3 +366,98 @@ m <- plm(sclfsat1 ~ factor(qfhigh), data = dcontI, model = "within", index = c("
           effect = "twoways")
 summary(m)
 
+# Sorting income
+t <- dcontI %>% 
+  filter(fimnnet > 0) %>% 
+  mutate(income = ifelse(fimnnet <= quantile(0.01), 1,
+                         ifelse(fimnnet > quantile(0.01) & fimnnet <= quantile(0.05), 5,
+                                ifelse(fimnnet > quantile(0.05) & fimnnet <= quantile (0.1), 10,
+                                       ifelse(fimnnet > quantile(0.1) & fimnnet <= quantile(0.5), 50,
+                                              ifelse(fimnnet > quantile(0.5) & fimnnet <= quantile(0.9), 90,
+                                                     ifelse(fimnnet > quantile(0.9) & fimnnet <= quantile(0.99), 99,
+                                                            ifelse(fimnnet > quantile(0.99) & fimnnet <= quantile(0.999), 99.9,
+                                                                   ifelse(fimnnet > quantile(0.999), 100, NA)))))))))
+
+t <- dcontI %>% 
+  mutate(income = quantile(fimnnet))
+ifelse()
+dcontI$income <- ifelse(dcontI$fimnnet <= quantile(0.01), 1,
+                        ifelse(dcontI$fimnnet > quantile(0.01) & dcontI$fimnnet <= quantile(0.05), 5,
+                               ifelse(dcontI$fimnnet > quantile(0.05) & dcontI$fimnnet <= quantile (0.1), 10,
+                                      ifelse(dcontI$fimnnet > quantile(0.1) & dcontI$fimnnet <= quantile(0.5), 50,
+                                             ifelse(dcontI$fimnnet > quantile(0.5) & dcontI$fimnnet <= quantile(0.9), 90,
+                                                    ifelse(dcontI$fimnnet > quantile(0.9) & dcontI$fimnnet <= quantile(0.99), 99,
+                                                           ifelse(dcontI$fimnnet > quantile(0.99) & dcontI$fimnnet <= quantile(0.999), 99.9,
+                                                                  ifelse(dcontI$fimnnet > quantile(0.999), 100, NA))))))))
+
+
+quantile(dcontI$fimnnet[dcontI$fimnnet > 0])
+warnings()
+table(t$income)
+In <- dcontI %>% 
+  filter(fimnnet > 0) %>% 
+  quantile(dcontI$fimnnet, c(0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99, 0.999))
+mutate(quantile = map(dcontI, ~ quantile(c(0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99, 0.999))))
+
+mutate(quantiles = quantile(dcontI$fimnnet, c(0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99, 0.999)))
+
+Q <- quantile(dcontI$fimnnet, c(0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99, 0.999))
+
+dcontI %>%
+  filter(fimnnet_dv > 0) %>%
+  nest(-year) %>%
+  mutate(Quantiles = map(data, ~ quantile(.$fimnnet_dv,
+                                          c(0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99, 0.999)))) %>% 
+  ggplot(aes(x = year, y = fimnnet_dv, colour = names)) +
+  geom_point(na.rm = TRUE) + 
+  geom_line(na.rm = TRUE) +
+  ylab("Net monthly income") + 
+  xlab("Year")
+
+t <- dcontI %>% 
+  filter(fimnnet > 0) %>% 
+  nest (-year) %>% 
+  mutate(Quantiles = map(data, ~ quantile(.$fimnnet,
+                                          c(0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99, 0.999))))
+
+ggplot(aes(x = year, y = Quantiles, colour = names)) +
+  geom_point()
+
+t <- dcontI %>%
+  group_by(year) %>%
+  summarise(
+    quant1 = quantile(fimnnet, 0.01),
+    quant5 = quantile(fimnnet, 0.05),
+    quant10 = quantile(fimnnet, 0.1),
+    quant50 = quantile(fimnnet, 0.5),
+    quant90 = quantile(fimnnet, 0.9),
+    quant95 = quantile(fimnnet, 0.95),
+    quant99 = quantile(fimnnet, 0.99),
+    quant99.9 = quantile(fimnnet, 0.999)
+  ) %>%
+  ungroup() %>%
+  gather(quantile, value, quant1:quant99.9)
+%>%
+  ggplot(aes(x = year, y = value, colour = quantile)) +
+  geom_point(na.rm = TRUE) + 
+  geom_line(na.rm = TRUE) +
+  ylab("Net monthly income") + 
+  xlab("Year")
+
+Q <- summarise(dcontI,
+               quant1 = quantile(fimnnet, 0.01),
+               quant5 = quantile(fimnnet, 0.05),
+               quant10 = quantile(fimnnet, 0.1),
+               quant50 = quantile(fimnnet, 0.5),
+               quant90 = quantile(fimnnet, 0.9),
+               quant95 = quantile(fimnnet, 0.95),
+               quant99 = quantile(fimnnet, 0.99),
+               quant99.9 = quantile(fimnnet, 0.999)
+)
+
+t <- dcontI %>% 
+  mutate(Quantiles = map(data, ~ quantile(.$fimnnet_dv,
+                                          c(0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99, 0.999))))
+
+dcontI %>% 
+  mutate()
