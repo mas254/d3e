@@ -91,7 +91,15 @@ dcleanI <- na.omit(dnaI) %>%
                            "5" = "5-somewhat satisfied", "6" = "6-mostly satisfied", "7" = "7-completely satisfied")) %>%
   mutate(sclfsat1 = factor(sclfsat1)) %>%
   mutate(sex = recode(sex, "1" = "male", "2" = "female")) %>%
-  mutate(sex = factor(sex))
+  mutate(sex = factor(sex)) %>% 
+  mutate(year = recode(wave, "a" = "2009",
+                       "b" = "2010",
+                       "c" = "2011",
+                       "d" = "2012",
+                       "e" = "2013",
+                       "f" = "2014",
+                       "g" = "2015")) %>%
+  mutate(year = as.numeric(year))
 
 # This is for treating the wellbeing score as a continuous variable
 # When we do our inferential analysis, we will need to treat "sclfsat1" as a continuous, not a factor variable,
@@ -119,7 +127,7 @@ rm(dI, dmeltI, dnaI, W1, W7)
 
 ##### Visualising Relationships #####
 # First, to explore our data, we will look at the distribution of wellbeing in each wave to see for any overall trends
-ggplot(dcleanI, aes(x = wave, fill = sclfsat1)) +
+ggplot(dcleanI, aes(x = year, fill = sclfsat1)) +
   geom_bar(position = 'fill')
 
 # An easy way to compare the numbers
@@ -165,7 +173,7 @@ dcontI %>%
   summarise(
     meanWb = mean(sclfsat1, na.rm = TRUE)
   ) %>%
-  ggplot(aes(x = year, y = meanWb, colour = sex)) +
+  ggplot(aes(x = year, y = meanWb, colour = sex, linetype = sex, shape = sex)) +
   geom_point() +
   geom_line()
 
@@ -176,27 +184,103 @@ table(W1$sclfsat1, W1$qfhigh)
 table(W7$sclfsat1, W7$qfhigh)
 
 # Subsetting the waves.
-W1 <- subset(dcleanI, wave == 'a',
-             select = c(qfhigh, sclfsat1))
+W1 <- subset(dcontI, wave == 'a',
+             select = c(qfhigh, sclfsat1, sex))
 
-W4 <- subset(dcleanI, wave == 'd',
-             select = c(qfhigh, sclfsat1))
+W4 <- subset(dcontI, wave == 'd',
+             select = c(qfhigh, sclfsat1, sex))
 
-W7 <- subset(dcleanI, wave == 'g',
-             select = c(qfhigh, sclfsat1))
+W7 <- subset(dcontI, wave == 'g',
+             select = c(qfhigh, sclfsat1, sex))
+
+# Sex
+library(grid)
+library(gridExtra)
+
+d <- ggplot(dcontI, aes(x = sex, y = sclfsat1, fill = sex)) +
+ geom_violin()
+
+a <- ggplot(W1, aes(x = sex, y = sclfsat1, fill = sex)) +
+  geom_violin()
+
+b <- ggplot(W4, aes(x = sex, y = sclfsat1, fill = sex)) +
+  geom_violin()
+
+c <- ggplot(W7, aes(x = sex, y = sclfsat1, fill = sex)) +
+  geom_violin()
+
+#Do not include
+grid.newpage()
+#Include
+pushViewport(viewport(layout = grid.layout(2, 2)))
+vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
+print(a, vp = vplayout(1, 1))
+print(d, vp = vplayout(1, 2))
+print(b, vp = vplayout(2, 1))
+print(c, vp = vplayout(2, 2))
+
+# Education
+grid.newpage()
+pushViewport(viewport(layout = grid.layout(2, 2)))
+vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
+print(a, vp = vplayout(1, 1))
+print(d, vp = vplayout(1, 2))
+print(b, vp = vplayout(2, 1))
+print(c, vp = vplayout(2, 2))
+
+h <- ggplot(dcontI, aes(x = qfhigh, y = sclfsat1, fill = qfhigh)) +
+  geom_violin()
+
+e <- ggplot(W1, aes(x = qfhigh, y = sclfsat1, fill = qfhigh)) +
+  geom_violin()
+
+f <- ggplot(W4, aes(x = qfhigh, y = sclfsat1, fill = qfhigh)) +
+  geom_violin()
+
+g <- ggplot(W7, aes(x = qfhigh, y = sclfsat1, fill = qfhigh)) +
+  geom_violin()
 
 # Looking at differences across time
-ggplot(W1, aes(x = qfhigh, fill = sclfsat1)) +
-  geom_bar(position = 'fill') +
-  coord_polar()
 
-ggplot(W4, aes(x = qfhigh, fill = sclfsat1)) +
-  geom_bar(position = 'fill') +
-  coord_polar()
+# Subsetting the waves.
+W.1 <- subset(dcleanI, wave == 'a',
+             select = c(qfhigh, sclfsat1, sex))
 
-ggplot(W7, aes(qfhigh, fill = sclfsat1)) +
-  geom_bar(position = 'fill') +
-  coord_polar()
+W.4 <- subset(dcleanI, wave == 'd',
+             select = c(qfhigh, sclfsat1, sex))
+
+W.7 <- subset(dcleanI, wave == 'g',
+             select = c(qfhigh, sclfsat1, sex))
+
+# Sex
+ggplot(dcleanI, aes(x = sex, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+ggplot(W.1, aes(x = sex, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+ggplot(W.4, aes(x = sex, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+ggplot(W.7, aes(sex, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+pushViewport(viewport(layout = grid.layout(2, 2)))
+vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
+print(a, vp = vplayout(1, 1))
+print(d, vp = vplayout(1, 2))
+print(b, vp = vplayout(2, 1))
+print(c, vp = vplayout(2, 2))
+
+# Education
+ggplot(W.1, aes(x = qfhigh, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+ggplot(W.4, aes(x = qfhigh, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+ggplot(W.7, aes(qfhigh, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
 
 # Showing proportions of wellbeing in education levels for these two waves
 signif(prop.table(table(W1$qfhigh)), 2)
