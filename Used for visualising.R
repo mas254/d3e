@@ -4,6 +4,11 @@
 
 dI <- fread('myData/dI.tab')
 
+dmeltI <- dI %>%
+  melt(id = "pidp") %>%
+  separate(variable, into = c("wave", "variable"), sep = "_") %>%
+  dcast(pidp + wave ~ variable)
+
 dnaI <- dmeltI %>%
   mutate(qfhigh = ifelse(qfhigh > 0, qfhigh, NA)) %>%
   mutate(qfhigh = ifelse(qfhigh < 96, qfhigh, NA)) %>%
