@@ -254,8 +254,8 @@ W.7 <- subset(dcleanI, wave == 'g',
              select = c(qfhigh, sclfsat1, sex))
 
 # Sex
-f1 <- subset(dcontI, sex == 'female')
-m1 <- subset(dcontI, sex == 'male')
+f <- subset(dcontI, sex == 'female')
+m <- subset(dcontI, sex == 'male')
 
 ggplot(f1, aes(x = wave, y = sclfsat1, fill = wave)) +
   geom_violin()
@@ -263,15 +263,15 @@ ggplot(f1, aes(x = wave, y = sclfsat1, fill = wave)) +
 ggplot(m1, aes(x = wave, y = sclfsat1, fill = wave)) +
   geom_violin()
 
-f <- subset(dcleanI, sex == 'female')
-m <- subset(dcleanI, sex == 'male')
+f1 <- subset(dcleanI, sex == 'female')
+m1 <- subset(dcleanI, sex == 'male')
 
 table(f$sclfsat1, f$wave)
 
-ggplot(f, aes(x = wave, fill = sclfsat1)) +
+ggplot(f1, aes(x = wave, fill = sclfsat1)) +
   geom_bar(position = 'fill')
 
-ggplot(m, aes(x = wave, fill = sclfsat1)) +
+ggplot(m1, aes(x = wave, fill = sclfsat1)) +
   geom_bar(position = 'fill')
 
 ggplot(dcleanI, aes(x = sex, fill = sclfsat1)) +
