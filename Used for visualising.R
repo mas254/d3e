@@ -148,16 +148,24 @@ A <- subset(dcleanI, qfhigh == '4-A level/equiv',
 CSE <- subset(dcleanI, qfhigh == '7-CSE',
               select = c(wave, sclfsat1))
 
-ggplot(High, aes(x = wave, fill = sclfsat1)) +
+c <- ggplot(High, aes(x = wave, fill = sclfsat1)) +
   geom_bar(position = 'fill')
 
-ggplot(A, aes(x = wave, fill = sclfsat1)) +
+d <- ggplot(A, aes(x = wave, fill = sclfsat1)) +
   geom_bar(position = 'fill')
 
-ggplot(CSE, aes(x = wave, fill = sclfsat1)) +
+e <- ggplot(CSE, aes(x = wave, fill = sclfsat1)) +
   geom_bar(position = 'fill')
 
-c <- f %>%
+grid.newpage()
+
+pushViewport(viewport(layout = grid.layout(1, 3)))
+vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
+print(c, vp = vplayout(1, 1))
+print(d, vp = vplayout(1, 2))
+print(e, vp = vplayout(1, 3))
+
+f <- f %>%
   group_by(year, qfhigh) %>%
   summarise(
     meanWb = mean(sclfsat1, na.rm = TRUE)
@@ -166,7 +174,7 @@ c <- f %>%
   geom_point() +
   geom_line()
 
-d <- m %>%
+g <- m %>%
   group_by(year, qfhigh) %>%
   summarise(
     meanWb = mean(sclfsat1, na.rm = TRUE)
@@ -180,8 +188,8 @@ grid.newpage()
 
 pushViewport(viewport(layout = grid.layout(, 2)))
 vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
-print(c, vp = vplayout(1, 1))
-print(d, vp = vplayout(1, 2))
+print(f, vp = vplayout(1, 1))
+print(g, vp = vplayout(1, 2))
 
 dcontI %>%
   group_by(year, qfhigh, sex) %>%
@@ -191,6 +199,21 @@ dcontI %>%
   ggplot(aes(x = year, y = meanWb, colour = qfhigh, linetype = sex, shape = sex)) +
   geom_point() +
   geom_line()
+
+quantile(dcleanI$fimnnet, seq(0, 1, 0.2))
+
+sc <- dcleanI %>% 
+  mutate(income = ifelse(fimnnet >= -17741.3379 & fimnnet <= 518.9808, 20,
+                         ifelse(fimnnet > 518.9808 & fimnnet <= 1051.6666, 40,
+                                ifelse(fimnnet > 1051.6666 & fimnnet <= 1502.5000, 60,
+                                       ifelse(fimnnet > 1502.5000 & fimnnet <= 2150.7295, 80,
+                                              ifelse(fimnnet > 2150.7295 & fimnnet <= 15000.0000, 100, NA)))))) %>% 
+  mutate(income = as.factor(income))
+
+ggplot(sc, aes(x = income, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+table(sc$sclfsat1, sc$income)
 
 quantile(dcontI$fimnnet, seq(0, 1, 0.2))
 
@@ -231,38 +254,38 @@ s %>%
   geom_point() +
   geom_line()
 
-sc <- dcleanI %>% 
-  filter(fimnnet > 0) %>% 
-  mutate(income = ifelse(fimnnet >= 1.506607e-04 & fimnnet <= 6.706440e+02, 20,
-                         ifelse(fimnnet > 6.706440e+02 & fimnnet <= 1.125058e+03, 40,
-                                ifelse(fimnnet > 1.125058e+03 & fimnnet <= 1.567589e+03, 60,
-                                       ifelse(fimnnet > 1.567589e+03 & fimnnet <= 2.200000e+03, 80,
-                                              ifelse(fimnnet > 2.200000e+03 & fimnnet <= 1.500000e+04, 100, NA)))))) %>% 
-  mutate(income = as.factor(income))
+y <- subset(s, dvage < '65',
+           select = c(1:9))
 
-ggplot(sc, aes(x = income, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
+table(y$dvage)
 
-table(sc$sclfsat1, sc$income)
+y1 <- subset(y, dvage!= 100)
 
-hundred <- subset(sc, income == '100',
-               select = c(wave, sclfsat1))
+table(y1$dvage)
 
-sixty <- subset(sc, income == '60',
-            select = c(wave, sclfsat1))
+y1 %>%
+  group_by(year, income) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = income)) +
+  geom_point() +
+  geom_line()
 
-twenty <- subset(sc, income == '20',
-              select = c(wave, sclfsat1))
+y1 %>%
+  group_by(year, income, sex) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = income, linetype = sex)) +
+  geom_point() +
+  geom_line()
 
-ggplot(High, aes(x = wave, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
-
-ggplot(A, aes(x = wave, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
-
-ggplot(CSE, aes(x = wave, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
-
-table(hundred$sclfsat1, hundred$wave)
-table(sixty$sclfsat1, sixty$wave)
-table(twenty$sclfsat1, twenty$wave)
+y1 %>%
+  group_by(year, income, sex, qfhigh) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = income, linetype = sex, shape = qfhigh)) +
+  geom_point() +
+  geom_line()
