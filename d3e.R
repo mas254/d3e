@@ -141,7 +141,8 @@ Wc <- subset(dcleanI, wave == c('a', 'd', 'g'),
 
 # Visualising the spread of wellbeing in each wave
 ggplot(Wc, aes(x = wave, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
+  geom_bar(position = 'fill') +
+  coord_polar(theta = 'y')
 
 # Showing this in a table for a closer look
 signif(prop.table(table(Wc$sclfsat1, Wc$wave)), 2)
@@ -253,6 +254,26 @@ W.7 <- subset(dcleanI, wave == 'g',
              select = c(qfhigh, sclfsat1, sex))
 
 # Sex
+f1 <- subset(dcontI, sex == 'female')
+m1 <- subset(dcontI, sex == 'male')
+
+ggplot(f1, aes(x = wave, y = sclfsat1, fill = wave)) +
+  geom_violin()
+
+ggplot(m1, aes(x = wave, y = sclfsat1, fill = wave)) +
+  geom_violin()
+
+f <- subset(dcleanI, sex == 'female')
+m <- subset(dcleanI, sex == 'male')
+
+table(f$sclfsat1, f$wave)
+
+ggplot(f, aes(x = wave, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+ggplot(m, aes(x = wave, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
 ggplot(dcleanI, aes(x = sex, fill = sclfsat1)) +
   geom_bar(position = 'fill')
 
