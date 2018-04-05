@@ -423,6 +423,28 @@ s %>%
   ggplot(aes(x = year, y = meanWb, colour = income)) +
   geom_point() +
   geom_line()
+
+hundred <- subset(sc, income == '100',
+                  select = c(wave, sclfsat1))
+
+sixty <- subset(sc, income == '60',
+                select = c(wave, sclfsat1))
+
+twenty <- subset(sc, income == '20',
+                 select = c(wave, sclfsat1))
+
+ggplot(hundred, aes(x = wave, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+ggplot(sixty, aes(x = wave, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+ggplot(twenty, aes(x = wave, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+table(hundred$sclfsat1, hundred$wave)
+table(sixty$sclfsat1, sixty$wave)
+table(twenty$sclfsat1, twenty$wave)
 ##### Analysis #####
 
 library(plm)
