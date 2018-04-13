@@ -6,4 +6,3 @@ output: pdf_document
 ---
 
 Mardown doc for d3e
-
