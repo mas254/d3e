@@ -1,5 +1,14 @@
 # Used for visualising
 
+library(tidyverse)
+library(data.table)
+library(readr)
+library(readxl)
+require(reshape2)
+library(plyr)
+library("fmsb")
+library(arm)
+
 # Opening
 
 dI <- fread('myData/dI.tab')
@@ -84,7 +93,7 @@ dcontI %>%
   geom_point() +
   geom_line()
 
-f <- subset(dcontI, sex == 'female')
+fe <- subset(dcontI, sex == 'female')
 
 m <- subset(dcontI, sex == 'male')
 
@@ -103,7 +112,7 @@ dcontI %>%
 
 # http://www.sthda.com/english/wiki/ggplot2-violin-plot-quick-start-guide-r-software-and-data-visualization
 
-a <- ggplot(f, aes(x = wave, y = sclfsat1, fill = wave)) +
+a <- ggplot(fe, aes(x = wave, y = sclfsat1, fill = wave)) +
   geom_violin()
 
 b <- ggplot(m, aes(x = wave, y = sclfsat1, fill = wave)) +
@@ -116,7 +125,7 @@ vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
 print(a, vp = vplayout(1, 1))
 print(b, vp = vplayout(1, 2))
 
-table(f$sclfsat1, f$wave)
+table(fe$sclfsat1, fe$wave)
 
 table(m$sclfsat1, m$wave)
 
@@ -165,7 +174,7 @@ print(c, vp = vplayout(1, 1))
 print(d, vp = vplayout(1, 2))
 print(e, vp = vplayout(1, 3))
 
-f <- f %>%
+f <- fe %>%
   group_by(year, qfhigh) %>%
   summarise(
     meanWb = mean(sclfsat1, na.rm = TRUE)
@@ -183,6 +192,8 @@ g <- m %>%
   geom_point() +
   geom_line() +
   coord_cartesian(ylim = c(4.25, 5.25))
+
+library(grid)
 
 grid.newpage()
 
@@ -289,3 +300,13 @@ y1 %>%
   ggplot(aes(x = year, y = meanWb, colour = income, linetype = sex, shape = qfhigh)) +
   geom_point() +
   geom_line()
+
+
+
+
+av <- data.frame(tapply(dcontI$sclfsat1, dcontI$wave, mean))
+Wave <- c('1', '2', '3', '4', '5', '6', '7')
+df <- data.frame(av, Wave)
+colnames(df)[1] <- 'Wellbeing'
+ggplot(d = df, aes(x = Wave, y = Wellbeing)) +
+  geom_point()
