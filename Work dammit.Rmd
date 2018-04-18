@@ -5,7 +5,7 @@ date: "18 April 2018"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, cache = TRUE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -137,11 +137,33 @@ ggplot(dcleanI, aes(x = year, fill = sclfsat1)) +
   geom_bar(position = 'fill')
 ```
 
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+Wc <- subset(dcleanI, wave == c('a', 'd', 'g'),
+             select = c(1:7))
 
+ggplot(Wc, aes(x = wave, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+```
 
-```{r}
-library(tidyverse)
-  dcontI %>%
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+dcontI %>%
+  group_by(year, sex) %>%
+  summarise(
+    meanWb = mean(sclfsat1, na.rm = TRUE)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = sex, linetype = sex, shape = sex)) +
+  geom_point() +
+  geom_line()
+```
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+ggplot(dcleanI, aes(x = sex, fill = sclfsat1)) +
+  geom_bar(position = 'fill') +
+  coord_polar(theta = 'y')
+```
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+dcontI %>%
  group_by(year, qfhigh) %>%
  summarise(
    meanWb = mean(sclfsat1, na.rm = TRUE)
@@ -149,6 +171,66 @@ library(tidyverse)
  ggplot(aes(x = year, y = meanWb, colour = qfhigh)) +
  geom_point() +
  geom_line()
+
+head(dcontI)
+```
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+ggplot(dcleanI, aes(x = qfhigh, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+Wd <- subset(dcleanI, qfhigh == c('1-Higher degree', '4-A level/equiv', '7-CSE'),
+             select = c(1:7))
+
+ggplot(Wd, aes(x = qfhigh, fill = sclfsat1)) +
+  geom_bar(position = 'fill') +
+  coord_polar(theta = 'y')
+```
+
+
+Following our analysis of the split between the sexes and wellbeing, it would be remiss not to compare this divide in wellbeing when analysing education. This analysis shows that the split between the sexes is exaggerated by certain education levels. Those who are least well educated (CSEs) have substantially higher levels of wellbeing for men than for women, and men with GCSEs have similar levels of wellbeing to those with A-levels and higher education, whereas for women those with GCSEs and higher education have substantially lower levels of wellbeing than those with A- and AS- levels. Interestingly, men with AS-levels and higher university degrees have the highest levels of wellbeing in men, where women with higher university degrees and university degrees have the highest levels of wellbeing in women. The only qualification where women score higher on wellbeing than men is university degrees.
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+dcontI %>%
+ group_by(year, qfhigh, sex) %>%
+ summarise(
+   meanWb = mean(sclfsat1, na.rm = TRUE)
+ ) %>%
+ ggplot(aes(x = year, y = meanWb, colour = qfhigh, linetype = sex, shape = sex)) +
+ geom_point() +
+ geom_line()
+```
+
+### Differentiating by income
+
+The final part of our descriptive analysis brought us on to the topic of income. As we used the variable for net monthly income, we decided to recode this into quantiles at every 20% of income, to make our descriptive analysis easier both to do, and to interpret.
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+quantile(dcleanI$fimnnet, seq(0, 1, 0.2))
+
+sc <- dcleanI %>% 
+  mutate(income = ifelse(fimnnet >= -17741.3379 & fimnnet <= 518.9808, 20,
+                         ifelse(fimnnet > 518.9808 & fimnnet <= 1051.6666, 40,
+                                ifelse(fimnnet > 1051.6666 & fimnnet <= 1502.5000, 60,
+                                       ifelse(fimnnet > 1502.5000 & fimnnet <= 2150.7295, 80,
+                                              ifelse(fimnnet > 2150.7295 & fimnnet <= 15000.0000, 100, NA)))))) %>% 
+  mutate(income = as.factor(income))
+```
+
+Our first graph is an overview of the dataset when segregating respondents by income. Incredibly, the group who are proportionately most likely to be ‘completely satisfied’ with their wellbeing are the bottom 20% of earners. This graph also shows that this group also have the lowest rates of dissatisfaction with wellbeing, and by looking at a table of this data for a more precise look, we can see the bottom 20% of earners are the third least likely to be ‘completely dissatisfied’, second least likely to be ‘mostly dissatisfied’ and least likely to be ‘somewhat dissatisfied’ in terms of wellbeing. This, coupled with the fact that the 4 other income brackets have almost identical proportions of respondents who were ‘completely satisfied’ with their wellbeing, is entirely contrary to our hypothesis that income is positively correlated with wellbeing.
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+ggplot(sc, aes(x = income, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+
+table(sc$sclfsat1, sc$income)
+```
+
+Our first line-graph shows almost exactly what we hypothesised: as income decreases, so does the mean average wellbeing. However, there is one very substantial exception to this rule. Those in the bottom fifth of earners have exceptionally high mean average wellbeing levels, not far from the top fifth of earners. This is a very surprising result, however could be quite easy to explain. Notably, net monthly income can be negative. As this variable is purely personal income, it does not take into account other earners in the household. This could mean that the household net income is in fact in the top 20%, yet this is earnt by only one person in the household, meaning other family members benefit from this secondary wealth. To try to counter this possible effect, we then removed individuals who had a negative net income, as we theorised that those on low-salaries would not spend far outside their means, unlike those with a spouse or parent on a high income salary.
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+quantile(dcontI$fimnnet, seq(0, 1, 0.2))
+
 t <- dcontI %>% 
   mutate(income = ifelse(fimnnet >= -17741.3379 & fimnnet <= 518.9808, 20,
                          ifelse(fimnnet > 518.9808 & fimnnet <= 1051.6666, 40,
@@ -156,6 +238,7 @@ t <- dcontI %>%
                                        ifelse(fimnnet > 1502.5000 & fimnnet <= 2150.7295, 80,
                                               ifelse(fimnnet > 2150.7295 & fimnnet <= 15000.0000, 100, NA)))))) %>% 
   mutate(income = as.factor(income))
+
 t %>%
   group_by(year, income) %>%
   summarise(
@@ -164,4 +247,78 @@ t %>%
   ggplot(aes(x = year, y = meanWb, colour = income)) +
   geom_point() +
   geom_line()
+
+quantile(dcontI$fimnnet[dcontI$fimnnet > 0], seq(0, 1, 0.2))
+
+s <- dcontI %>% 
+  filter(fimnnet > 0) %>% 
+  mutate(income = ifelse(fimnnet >= 1.506607e-04 & fimnnet <= 6.706440e+02, 20,
+                         ifelse(fimnnet > 6.706440e+02 & fimnnet <= 1.125058e+03, 40,
+                                ifelse(fimnnet > 1.125058e+03 & fimnnet <= 1.567589e+03, 60,
+                                       ifelse(fimnnet > 1.567589e+03 & fimnnet <= 2.200000e+03, 80,
+                                              ifelse(fimnnet > 2.200000e+03 & fimnnet <= 1.500000e+04, 100, NA)))))) %>% 
+  mutate(income = as.factor(income))
+
+s %>%
+  group_by(year, income) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = income)) +
+  geom_point() +
+  geom_line()
 ```
+
+This change in coding made had a substantial effect on the outcome, although the bottom fifth of earners still represent an outlier in mean average wellbeing. Interestingly, this group seemed to be least effected by the general slump in average wellbeing from 2011-2013, going from second bottom to second top (in mean average wellbeing) over this period. One possible explanation for the bottom fifth still being an outlier is retirees, whose net monthly income may not be very high, but whose savings may help them spend well. We correct for this by sub-setting our data to only include those under 65 (the retirement age in the UK), though this has very little difference overall, suggesting other factors are influential in this outlier.
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+y <- subset(s, dvage < '65',
+           select = c(1:9))
+
+table(y$dvage)
+
+y1 <- subset(y, dvage!= 100)
+
+table(y1$dvage)
+
+y1 %>%
+  group_by(year, income) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = income)) +
+  geom_point() +
+  geom_line()
+
+# Note: for some reason, one respondent who was 100 was not removed by the initial sub-setting, hence having to subset the data a second time. 
+```
+
+The final part of our descriptive analysis involves splitting this final graph by sex, given the notable difference it made in wellbeing generally. Indeed, by segregating between sexes, this graph shows some remarkable trends. Much like for education, there is only one level of income that women have a higher mean average wellbeing than men, in this case the second fifth of respondents. For every other level of income, men have a higher mean average wellbeing each year, almost without exception. Arguably just as notably is the mean average wellbeing for the bottom fifth of earners when split by sex. For men, this group’s wellbeing hovers around the same level as those in the second highest bracket of earners, and nearly matches those in the top bracket of earners in the most recent wave of survey data. For women, the bottom 20% of earners are either similar to the lowest mean average level for wellbeing, or indeed score lowest. Furthermore, the difference between the male and female levels for wellbeing are most different in this category overall, by some distance, with only the sex divide in wellbeing for the top 20% of earners being comparable, in 2013.
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+y1 %>%
+  group_by(year, income, sex) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = income, linetype = sex)) +
+  geom_point() +
+  geom_line()
+```
+
+There are a couple of possible explanations for these disparities. First, women in the bottom 20% of earners are perhaps more likely to be housekeepers than men, having to work long and hard without pay. Men in this category are perhaps more likely to have a high gross salary with a large amount of outgoings; more data would be useful here to evaluate these theories. Second, men in the second fifth of lowest earners are perhaps likely to be working in jobs requiring heavy manual labour, with higher risk of personal injury, longer, more taxing hours, and fewer health benefits or insurances, whereas women in this category are perhaps more likely to be working in roles such as cleaning or catering. Further, the gap in average wellbeing between this second lowest category of earners and other levels is generally the largest for men. The same is not true for women, with the largest gap in average wellbeing coming between those best paid and the other levels.
+
+Unfortunately, visualising the differences in wellbeing between respondents with different levels of income, education, and of different sexes is impractical, and this comparison will be left for statistical analysis (shown below is the graph split by each of these three factors. Aside from a couple of notable outliers, it is almost entirely uninterpretable).
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+y1 %>%
+  group_by(year, income, sex, qfhigh) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = income, linetype = sex, shape = qfhigh)) +
+  geom_point() +
+  geom_line()
+```
+
+# Statistical analysis
