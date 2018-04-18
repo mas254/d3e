@@ -1,0 +1,92 @@
+---
+title: "Untitled"
+author: '660032036'
+date: "18 April 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(data.table)
+setwd('E:/SSD Wrong/Documents/Uni/R Studio/d3e/d3e')
+files <- dir("data/UKDA-6614-tab/tab",
+             pattern="indresp",
+             recursive = TRUE,
+             full.names=TRUE)
+files <- files[str_detect(files, "us")]
+varsI <- c('pidp', 'qfhigh_dv', 'fimnnet_dv', 'fimngrs_dv', 'sclfsat1', 'dvage', 'sex', 'racel', 'racelo_code')
+for (i in 1:7) {
+  varsToSelectI <- paste(letters[i], varsI, sep = "_")
+  varsToSelectI <- c("pidp", varsToSelectI)
+  dataI <- fread(files[i], select = varsToSelectI)
+  if (i == 1) {
+    dI <- dataI  
+  }
+  else {
+    dI <- full_join(dI, dataI, by = "pidp")
+  }
+  rm(dataI)
+}
+dmeltI <- dI %>%
+  melt(id = "pidp") %>%
+  separate(variable, into = c("wave", "variable"), sep = "_") %>%
+  dcast(pidp + wave ~ variable)
+dnaI <- dmeltI %>%
+  mutate(qfhigh = ifelse(qfhigh > 0, qfhigh, NA)) %>%
+  mutate(qfhigh = ifelse(qfhigh < 96, qfhigh, NA)) %>%
+  mutate(sclfsat1 = ifelse(sclfsat1 > 0, sclfsat1, NA)) %>%
+  mutate(dvage = ifelse(dvage > 0, dvage, NA)) %>%
+  mutate(sex = ifelse(sex > 0, sex, NA)) %>%
+  mutate(racel = ifelse(racel > 0, racel, NA)) %>%
+  mutate(racel = ifelse(racel < 96, racel, NA)) %>%
+  mutate(racelo = ifelse(racelo > 0, racelo, NA)) %>%
+  mutate(racelo = ifelse(racelo < 96, racelo, NA))
+dnaI <- subset(dnaI, , -c(racel, racelo, fimngrs))
+dcontI <- na.omit(dnaI) %>%
+  mutate(qfhigh = recode(qfhigh, "1" = "1-Higher degree", "2" = "2-Degree/equiv", "3" = "3-Higher ed",
+                         "4" = "3-Higher ed", "5" = "3-Higher ed", "6" = "3-Higher ed",
+                         "7" = "4-A level/equiv", "8" = "4-A level/equiv", "9" = "4-A level/equiv",
+                         "10" = "5-AS level/equiv", "11" = "5-AS level/equiv", "12" = "5-AS level/equiv",
+                         "13" = "6-GCSE/equiv", "14" = "7-CSE", "15" = "6-GCSE/equiv", "16" = "8-Other school cert")) %>%
+  mutate(qfhigh = factor(qfhigh)) %>%
+  mutate(sex = recode(sex, "1" = "male", "2" = "female")) %>%
+  mutate(sex = factor(sex)) %>% 
+  mutate(year = recode(wave, "a" = "2009",
+                       "b" = "2010",
+                       "c" = "2011",
+                       "d" = "2012",
+                       "e" = "2013",
+                       "f" = "2014",
+                       "g" = "2015")) %>%
+  mutate(year = as.numeric(year))
+```
+  
+```{r}
+  dcontI %>%
+ group_by(year, qfhigh) %>%
+ summarise(
+   meanWb = mean(sclfsat1, na.rm = TRUE)
+ ) %>%
+ ggplot(aes(x = year, y = meanWb, colour = qfhigh)) +
+ geom_point() +
+ geom_line()
+t <- dcontI %>% 
+  mutate(income = ifelse(fimnnet >= -17741.3379 & fimnnet <= 518.9808, 20,
+                         ifelse(fimnnet > 518.9808 & fimnnet <= 1051.6666, 40,
+                                ifelse(fimnnet > 1051.6666 & fimnnet <= 1502.5000, 60,
+                                       ifelse(fimnnet > 1502.5000 & fimnnet <= 2150.7295, 80,
+                                              ifelse(fimnnet > 2150.7295 & fimnnet <= 15000.0000, 100, NA)))))) %>% 
+  mutate(income = as.factor(income))
+t %>%
+  group_by(year, income) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = income)) +
+  geom_point() +
+  geom_line()
+```
