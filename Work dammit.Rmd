@@ -9,16 +9,20 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r cache = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
 library(tidyverse)
+
 library(data.table)
-setwd('E:/SSD Wrong/Documents/Uni/R Studio/d3e/d3e')
+
 files <- dir("data/UKDA-6614-tab/tab",
              pattern="indresp",
              recursive = TRUE,
              full.names=TRUE)
+
 files <- files[str_detect(files, "us")]
+
 varsI <- c('pidp', 'qfhigh_dv', 'fimnnet_dv', 'fimngrs_dv', 'sclfsat1', 'dvage', 'sex', 'racel', 'racelo_code')
+
 for (i in 1:7) {
   varsToSelectI <- paste(letters[i], varsI, sep = "_")
   varsToSelectI <- c("pidp", varsToSelectI)
@@ -31,10 +35,16 @@ for (i in 1:7) {
   }
   rm(dataI)
 }
+```
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
 dmeltI <- dI %>%
   melt(id = "pidp") %>%
   separate(variable, into = c("wave", "variable"), sep = "_") %>%
   dcast(pidp + wave ~ variable)
+```
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
 dnaI <- dmeltI %>%
   mutate(qfhigh = ifelse(qfhigh > 0, qfhigh, NA)) %>%
   mutate(qfhigh = ifelse(qfhigh < 96, qfhigh, NA)) %>%
@@ -45,7 +55,49 @@ dnaI <- dmeltI %>%
   mutate(racel = ifelse(racel < 96, racel, NA)) %>%
   mutate(racelo = ifelse(racelo > 0, racelo, NA)) %>%
   mutate(racelo = ifelse(racelo < 96, racelo, NA))
+```
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+# Subsetting the data frame into individual waves
+W1 <- subset(dnaI, wave == 'a',
+             select = c(1:10))
+
+W7 <- subset(dnaI, wave == 'g',
+             select = c(1:10))
+
+# Checking for variables with larger than average number of NAs
+summary(W1)
+
+summary(W7)
+
 dnaI <- subset(dnaI, , -c(racel, racelo, fimngrs))
+```
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+dcleanI <- na.omit(dnaI) %>%
+  mutate(qfhigh = recode(qfhigh, "1" = "1-Higher degree", "2" = "2-Degree/equiv", "3" = "3-Higher ed",
+                         "4" = "3-Higher ed", "5" = "3-Higher ed", "6" = "3-Higher ed",
+                         "7" = "4-A level/equiv", "8" = "4-A level/equiv", "9" = "4-A level/equiv",
+                         "10" = "5-AS level/equiv", "11" = "5-AS level/equiv", "12" = "5-AS level/equiv",
+                         "13" = "6-GCSE/equiv", "14" = "7-CSE", "15" = "6-GCSE/equiv", "16" = "8-Other school cert")) %>%
+  mutate(qfhigh = factor(qfhigh)) %>%
+  mutate(sclfsat1 = recode(sclfsat1, "1" = "1-completely dissatisfied", "2" = "2-mostly dissatisfied",
+                           "3" = "3-somewhat dissatisfied", "4" = "4-neither satisfied or dissatisfied",
+                           "5" = "5-somewhat satisfied", "6" = "6-mostly satisfied", "7" = "7-completely satisfied")) %>%
+  mutate(sclfsat1 = factor(sclfsat1)) %>%
+  mutate(sex = recode(sex, "1" = "male", "2" = "female")) %>%
+  mutate(sex = factor(sex)) %>% 
+  mutate(year = recode(wave, "a" = "2009",
+                       "b" = "2010",
+                       "c" = "2011",
+                       "d" = "2012",
+                       "e" = "2013",
+                       "f" = "2014",
+                       "g" = "2015")) %>%
+  mutate(year = as.numeric(year))
+```
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
 dcontI <- na.omit(dnaI) %>%
   mutate(qfhigh = recode(qfhigh, "1" = "1-Higher degree", "2" = "2-Degree/equiv", "3" = "3-Higher ed",
                          "4" = "3-Higher ed", "5" = "3-Higher ed", "6" = "3-Higher ed",
@@ -64,8 +116,31 @@ dcontI <- na.omit(dnaI) %>%
                        "g" = "2015")) %>%
   mutate(year = as.numeric(year))
 ```
-  
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+rm(dI, dmeltI, dnaI)
+```
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+dcontI %>%
+ group_by(year) %>%
+ summarise(
+   meanWb = mean(sclfsat1, na.rm = TRUE)
+ ) %>%
+ ggplot(aes(x = year, y = meanWb)) +
+ geom_point() +
+ geom_line()
+```
+
+```{r cache = TRUE, message = FALSE, warning = FALSE}
+ggplot(dcleanI, aes(x = year, fill = sclfsat1)) +
+  geom_bar(position = 'fill')
+```
+
+
+
 ```{r}
+library(tidyverse)
   dcontI %>%
  group_by(year, qfhigh) %>%
  summarise(
