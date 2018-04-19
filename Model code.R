@@ -39,5 +39,16 @@ W7 %>%
   ggplot(aes(x = qfhigh, y = sclfsat1)) +
   geom_bar(stat = "summary", fun.y = "mean")
 
-all <- lm(sclfsat1 ~ dvage + fimnnet + factor(qfhigh), W7)
+sex <- lm(sclfsat1 ~ factor(sex), W7)
+summary(sex)
+W7 %>%
+  ggplot(aes(x = sex, y = sclfsat1)) +
+  geom_bar(stat = "summary", fun.y = "mean")
+
+all <- lm(sclfsat1 ~ dvage + fimnnet + factor(qfhigh) + factor(sex), W7)
 summary(all)
+
+
+
+long <- plm(sclfsat1 ~ fimnnet + factor(qfhigh) + dvage + factor(sex), data = dcontI, model = "within", index = c("pidp", "year"), effect = "twoways")
+summary(long)

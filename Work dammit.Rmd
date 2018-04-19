@@ -418,6 +418,8 @@ y1 %>%
 
 # Statistical analysis
 
+## Analysing the most recent wave of data
+
 Having taken a preliminary look into our dataset, and visualised some of the relationships of interest, we move on to evaluating whether any of these relationships are statistically significant. First, we calculated whether there was a significant relationship between the age of respondents and their wellbeing (using the most recent wave of data).
 
 ```{r age lm, cache = TRUE, message = FALSE, warning = FALSE}
@@ -486,4 +488,46 @@ summary(incomer1)
 # Calculated using the minimum wage for over-21s (https://www.gov.uk/national-minimum-wage-rates) for 2015 (the final full working year before survey data was taken throughout 2016), subtracting holiday time (https://www.gov.uk/bank-holidays and https://www.gov.uk/holiday-entitlement-rights), after tax (https://www.gov.uk/income-tax-rates/previous-tax-years).
 ```
 
-The final relationship we will look at before creating a model that controls for all our variables is that between education and wellbeing.
+The penultimate relationship we will look at, before creating a model that controls for all our variables, is that between education and wellbeing. Our model showed that, compared to respondents with higher degrees, the difference in wellbeing with those with degrees and, strangely, AS-levels were not statistically significant. However, the differences in wellbeing between respondents with higher degrees and all other qualifications *were* statistically significant. Interestingly, the magnitude of the effect of respondents who had gone through higher education (e.g. a teaching qualification but not a pgce) and those with GCSEs was similar (-0.24682 and -0.22977 respectively), alongside a smaller magnitude of effect for respondents with A-levels (only -0.10773). The largest effect magnitudes came from respondents with CSEs and ‘Other school certificates’, with effect magnitudes of -0.41846 and -0.52835 respectively. The wellbeing scores for these education levels are included in the following graph.
+
+```{r education, cache = TRUE, message = FALSE, warning = FALSE}
+edu <- lm(sclfsat1 ~ factor(qfhigh), W7)
+
+summary(edu)
+
+W7 %>%
+  ggplot(aes(x = qfhigh, y = sclfsat1)) +
+  geom_bar(stat = "summary", fun.y = "mean")
+```
+
+Finally, we evaluated the relationship between wellbeing and sex. As our descriptive analysis suggests, men have a higher wellbeing score than women. Our models allows us to see that the difference between the two is statistically significant at the 99.9% confidence interval (p < 0.001), and the difference is shown in the below graph.
+
+```{r sex model & graph, cache = TRUE, message = FALSE, warning = FALSE}
+sex <- lm(sclfsat1 ~ factor(sex), W7)
+
+summary(sex)
+
+W7 %>%
+  ggplot(aes(x = sex, y = sclfsat1)) +
+  geom_bar(stat = "summary", fun.y = "mean")
+```
+
+Having evaluated the significance of our variables with wellbeing separately, we then create a linear model where we control for each of the variables, to see if this significance holds. We see that the significance of age, income, and sex are unchanged, with largely similar magnitudes of effect as well. Interestingly, the difference between those who have higher degrees and those with AS-levels is now statistically significant at the 95% confidence level, and has a similar magnitude of effect as those with A-levels. Additionally, the magnitude of the effect of those respondents with higher education (e.g. a teaching qualification but not a pgce) has decreased, meaning there is now a noticeable difference between them and those with GCSEs. Finally, the magnitude of the effect on wellbeing of respondents with CSEs and ‘Other school certificates’ has decreased to -0.3001 from -0.4185 and to -0.3154 from -0.5284 respectively.
+
+```{r all model, cache = TRUE, message = FALSE, warning = FALSE}
+all <- lm(sclfsat1 ~ dvage + fimnnet + factor(qfhigh) + factor(sex), W7)
+
+summary(all)
+
+# Note: these changes in education are for when all other variables are constant, and represent the differences between respondents in our survey data. This does not mean that if a respondent gained a new qualification their wellbeing would necessarily rise, rather these are the differences between respondents observed in our survey data.
+```
+
+## Longitudinal analysis
+
+```{r longitudinal model, cache = TRUE, message = FALSE, warning = FALSE}
+library(plm)
+
+long <- plm(sclfsat1 ~ fimnnet + factor(qfhigh) + dvage + factor(sex), data = dcontI, model = "within", index = c("pidp", "year"), effect = "twoways")
+
+summary(long)
+```
