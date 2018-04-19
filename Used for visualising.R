@@ -292,6 +292,15 @@ y1 %>%
   geom_point() +
   geom_line()
 
+# t %>%
+#   group_by(year, income, sex) %>%
+#   summarise(
+#     meanWb = mean(sclfsat1)
+#   ) %>%
+#   ggplot(aes(x = year, y = meanWb, colour = income, linetype = sex)) +
+#   geom_point() +
+#   geom_line()
+
 y1 %>%
   group_by(year, income, sex, qfhigh) %>%
   summarise(
