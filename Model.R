@@ -81,12 +81,70 @@ W7 <- subset(dcontI, wave == 'g',
 W7 %>%
   ggplot(aes(x = dvage, y = sclfsat1)) +
   geom_smooth() +
-  geom_smooth(method = "lm", colour = "red")
+  geom_smooth(method = "lm", colour = "red", se = FALSE)
+
+W7p <- subset(W7, dvage < 65,
+            select = c(1:8))
+
+W7p %>%
+  ggplot(aes(x = dvage, y = sclfsat1)) +
+  geom_smooth() +
+  geom_smooth(method = "lm", colour = "red", se = FALSE)
 
 W7 %>%
   ggplot(aes(x = fimnnet, y = sclfsat1)) +
   geom_smooth() +
   geom_smooth(method = "lm", colour = "red", se = FALSE)
+
+W7r <- subset(W7, fimnnet > 0,
+              select = c(1:8))
+
+W7r %>%
+  ggplot(aes(x = fimnnet, y = sclfsat1)) +
+  geom_smooth() +
+  geom_smooth(method = "lm", colour = "red", se = FALSE)
+
+W7r1 <- subset(W7, fimnnet > 800,
+              select = c(1:8))
+
+W7r1 %>%
+  ggplot(aes(x = fimnnet, y = sclfsat1)) +
+  geom_smooth() +
+  geom_smooth(method = "lm", colour = "red", se = FALSE)
+
+6.7*40*45*.8
+
+quantile(dcontI$fimnnet[dcontI$fimnnet < 1000], seq(0, 1, 0.2))
+
+s <- dcontI %>% 
+  filter(fimnnet > 1000) %>% 
+  mutate(income = ifelse(fimnnet >= 1000.002 & fimnnet <= 1277.346, 20,
+                         ifelse(fimnnet > 1277.346 & fimnnet <= 1581.000, 40,
+                                ifelse(fimnnet > 1581.000 & fimnnet <= 1961.228, 60,
+                                       ifelse(fimnnet > 1961.228 & fimnnet <= 2564.095, 80,
+                                              ifelse(fimnnet > 2564.095 & fimnnet <= 15000.000, 100, NA)))))) %>% 
+  mutate(income = as.factor(income))
+
+s %>%
+  ggplot(aes(x = fimnnet, y = sclfsat1)) +
+  geom_smooth() +
+  geom_smooth(method = "lm", colour = "red", se = FALSE)
+
+s %>%
+  group_by(year, income, sex) %>%
+  summarise(
+    meanWb = mean(sclfsat1)
+  ) %>%
+  ggplot(aes(x = year, y = meanWb, colour = income, linetype = sex)) +
+  geom_point() +
+  geom_line()
+
+z <- dcontI %>%
+  filter(fimnnet < 1000)
+
+z %>%
+  ggplot(aes(x = fimnnet, y = sclfsat1)) +
+  geom_smooth()
 
 # Most recent year
 
