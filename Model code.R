@@ -47,8 +47,3 @@ W7 %>%
 
 all <- lm(sclfsat1 ~ dvage + fimnnet + factor(qfhigh) + factor(sex), W7)
 summary(all)
-
-
-
-long <- plm(sclfsat1 ~ fimnnet + factor(qfhigh) + dvage + factor(sex), data = dcontI, model = "within", index = c("pidp", "year"), effect = "twoways")
-summary(long)

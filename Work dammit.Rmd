@@ -524,10 +524,60 @@ summary(all)
 
 ## Longitudinal analysis
 
-```{r longitudinal model, cache = TRUE, message = FALSE, warning = FALSE}
-library(plm)
+So far, our analysis has focused on the most recent wave of data. However, we can evaluate whether the changes in wellbeing from year-to-year are statistically significant in each of our variables. First, we are able to see if the overall changes in wellbeing from year-to-year are statistically significant.
 
-long <- plm(sclfsat1 ~ fimnnet + factor(qfhigh) + dvage + factor(sex), data = dcontI, model = "within", index = c("pidp", "year"), effect = "twoways")
+```{r wellbeing long, cache = TRUE, message = FALSE, warning = FALSE}
+welllong <- lm(sclfsat1 ~ factor(year), d = dcontI)
 
-summary(long)
+summary(welllong)
 ```
+
+Our results show that each year is statistically different at least at the 95% confidence level, and that the magnitude of this effect varies, though is fairly small in 2010 and 2015.
+
+From our descriptive analysis section (Figure WHAT) we can see that the wellbeing for men and women seems to follow the same pattern, with no real change in the wellbeing between the sexes. To do this, we use interaction effects between year and sex in a linear regression model.
+
+```{r sex long, cache = TRUE, message = FALSE, warning = FALSE}
+sexlong <- lm(sclfsat1 ~ as.factor(year) * sex, data = dcontI)
+
+summary(sexlong)
+```
+
+This table shows us that aside from in 2013, there is no statistically significant difference between the effect sex has on wellbeing over time. As for 2013, this difference is only significant at the 90% confidence level, and the effect is fairly small. Consequently, we can conclude that changes in wellbeing over time are not a result of being one sex or the other, rather that there is a consistent difference in wellbeing between the sexes.
+
+For longitudinal analysis of education, we treat it as a non-varying variable, as all respondents are over the age of 18 when they respond to the survey and only a small number of respondents will gain a new qualification over the time-frame our survey covers.
+
+```{r education long, cache = TRUE, message = FALSE, warning = FALSE}
+edlong <- lm(sclfsat1 ~ as.factor(year) * factor(qfhigh), data = dcontI)
+
+summary(edlong)
+```
+
+Our analysis shows us that, for the most part, there is not an effect in wellbeing for respondents with different qualifications that changes over time. However, there are three statistically significant exceptions to this. In 2011, those with ‘CSE’s had a wellbeing that was lower by 1.723, significant at a 90% confidence level. Further, in 2014, those same respondents had a wellbeing that was lower by 2.268, significant at a 95% confidence level. Finally, respondents with ‘Other school certificates’ had a wellbeing that was lower by 2.148, significant at a 95% confidence level, in 2015. Therefore, barring these exceptions (where the difference in wellbeing is greater), the difference in wellbeing between those with the different qualifications is consistent.
+
+So far we have seen whether people of different ages in 2015 have different levels of wellbeing. However, as this variable (age) changes over time, we can evaluate whether people’s wellbeing changes as they age, by carrying out longitudinal analysis of our data,. Using the plm package, we are able to show whether any changes in wellbeing as the participants in the survey aged were statistically significant.
+
+```{r age long, cache = TRUE, message = FALSE, warning = FALSE}
+agelong <- plm(sclfsat1 ~ dvage, data = dcontI, model = "within", index = c("pidp", "year"), effect = "twoways")
+
+summary(agelong)
+```
+
+The results of our longitudinal analysis show these changes are not statistically significant at the 95% confidence level (p > 0.05).
+
+Finally, we can evaluate whether changes in income for respondents have a statistically significant impact on wellbeing.
+
+```{r income long, cache = TRUE, message = FALSE, warning = FALSE}
+inlong <- plm(sclfsat1 ~ fimnnet, data = dcontI, model = "within", index = c("pidp", "year"), effect = "twoways")
+
+summary(inlong)
+```
+
+Surprisingly, individual changes in income are not met with a statistically significant increase in wellbeing. Perhaps this is because a large increase in income is necessary for an impact to be made on an individuals’ life, for example so an individual can move to a nicer part of the country, and so perhaps any change in wellbeing due to an increase in income for individuals takes longer to come into effect that we are able to see in our seven years of data.
+
+# Conclusion
+
+Discussion. This is a very important part. You need to discuss here how the statistical results you have got contribute to our understanding of your topic (for example, political interest in Britain). Explain in substantive terms your results and discuss them. Why has political interest increased (or decresed, or ramained stable)? What factors contributed to this?
+
+# To Do
+
+EVALUATE CHANGES (WHETHER THEY MAKE ANY DISCERNIBLE DIFFERENCE OR NOT) FROM LAST SECTION (e.g. add bit about age having a tiny difference in wellbeing score despite being statistically significant) – also add (p < 0.05) for statistical significance etc. - edit down descriptive section (remove attempted explanations, keep for discussion/conclusion)
