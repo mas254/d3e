@@ -601,6 +601,10 @@ From our longitudinal analysis we can conclude that the influence of sex, age, i
 
 In terms of the impact of our study, we are most notably filling a gap in research on the effect education has on wellbeing, as it is an area of study that “lags behind” other areas in terms of its impact on wellbeing (Pinxten and Lievens, 2014: 1096). As we found that there is a positive correlation between education and wellbeing, the emphasis on encouraging and facilitating the education of individuals arguably takes on even greater importance. Indeed, this supports Abel’s (2007: 43) conclusion that “health promotion practice should give increased attention” to educating individuals about health “at the early stages of intervention planning”.
 
+# Conclusion
+
+Our investigation found that wellbeing fell across the population from 2011-2013, before rising to similar levels of 2009 & 2010 in 2014 & 2015. We found that there was statistically significant difference in wellbeing between the sexes, with men reporting a higher wellbeing than women. This difference did not change over time. We also found that wellbeing decreased with age, before increasing near the age of retirement, then decreasing again. However, there was no statistically significant change in wellbeing observed as individuals aged. There were significant differences in wellbeing between education levels in our dataset, which were again stable over time. Finally, while the top 80% of income were positively correlated with wellbeing, the bottom 20% were not. Further investigation  here in particular would be useful.
+
 # To Do
 
 
