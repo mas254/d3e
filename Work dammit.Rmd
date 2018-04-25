@@ -2,7 +2,9 @@
 title: "Untitled"
 author: '660032036'
 date: "18 April 2018"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE, cache = TRUE}
@@ -401,8 +403,6 @@ y1 %>%
   geom_line()
 ```
 
-There are a couple of possible explanations for these disparities. First, women in the bottom 20% of earners are perhaps more likely to be housekeepers than men, having to work long and hard without pay. Men in this category are perhaps more likely to have a high gross salary with a large amount of outgoings; more data would be useful here to evaluate these theories. Second, men in the second fifth of lowest earners are perhaps likely to be working in jobs requiring heavy manual labour, with higher risk of personal injury, longer, more taxing hours, and fewer health benefits or insurances, whereas women in this category are perhaps more likely to be working in roles such as cleaning or catering. Further, the gap in average wellbeing between this second lowest category of earners and other levels is generally the largest for men. The same is not true for women, with the largest gap in average wellbeing coming between those best paid and the other levels.
-
 Unfortunately, visualising the differences in wellbeing between respondents with different levels of income, education, and of different sexes is impractical, and this comparison will be left for statistical analysis (shown below is the graph split by each of these three factors. Aside from a couple of notable outliers, it is almost entirely uninterpretable).
 
 ```{r y1 all, cache = TRUE, message = FALSE, warning = FALSE}
@@ -547,6 +547,8 @@ This table shows us that aside from in 2013, there is no statistically significa
 For longitudinal analysis of education, we treat it as a non-varying variable, as all respondents are over the age of 18 when they respond to the survey and only a small number of respondents will gain a new qualification over the time-frame our survey covers.
 
 ```{r education long, cache = TRUE, message = FALSE, warning = FALSE}
+library(plm)
+
 edlong <- lm(sclfsat1 ~ as.factor(year) * factor(qfhigh), data = dcontI)
 
 summary(edlong)
@@ -574,10 +576,37 @@ summary(inlong)
 
 Surprisingly, individual changes in income are not met with a statistically significant increase in wellbeing. Perhaps this is because a large increase in income is necessary for an impact to be made on an individuals’ life, for example so an individual can move to a nicer part of the country, and so perhaps any change in wellbeing due to an increase in income for individuals takes longer to come into effect that we are able to see in our seven years of data.
 
-# Conclusion
+# Discussion
 
-Discussion. This is a very important part. You need to discuss here how the statistical results you have got contribute to our understanding of your topic (for example, political interest in Britain). Explain in substantive terms your results and discuss them. Why has political interest increased (or decresed, or ramained stable)? What factors contributed to this?
+Having established that changes in the general level of wellbeing across Britain were statistically significant from year-to-year, it is worthwhile looking at the major events that could have had an effect on this. Listed below are a number of major events, with suggested effects they may have had.
+
+* **November 2009:** Britain emerges from longest recession since quarterly figures first recorded (1955). Though there was a drop in wellbeing in the years following this, it could be the result of the recession and subsequent policy finally having an effect on individuals.
+* **May 2010:** The first post-war coalition government is formed. With a large proportion of the vote going to the Liberal Democrats, maybe this was a sign that the population were unhappy with the established political parties, pre-empting a fall in wellbeing.
+* **October 2010:** Austerity began, with large-scale public spending cuts, averaging 19% over four years.
+* **Over the course of 2011:** Resultantly, the UK became the world’s most indebted country and household income reached a low of 12th globally. There is little wonder that general wellbeing fell following this.
+* **August 2011:** Widespread riots and looting in London and other major English cities after a young black man was shot and killed by a police officer. 
+* **May-June 2012:** Queen’s Diamond Jubilee celebrations, a time of huge nationalistic pride across the UK.
+August-September 2012: British Olympics and Paralympics, which received “widespread international acclaim”, and was “seen as a fillip in a time of economic gloom”.
+* **October 2013:** Unemployment dropped below 2.5 million first time in 4 years. A rise in wellbeing following this is unsurprising.
+May 2014: Surge in UKIP votes, perhaps reflecting a rise in nationalistic pride.
+* **September 2014:** Scottish vote to remain as part of the UK
+* **By the end of 2014:** UK GDP growth the fastest in the G7 and in Europe, with employment highest since records began.
+* **May 2015:** General election resulted in the first Conservative majority since 1992 to the shock of the pollsters, with UKIP making huge gains. Prior to next year’s European Union, nationalistic pride is perhaps at a high.
+
+The significance of class-based differences in perceptions of wellbeing is indicated by Bourdieu (1979), who argues that the working-classes possess a far greater ‘functional’ idea of health in comparison to the middle- and upper-classes. This difference suggests the working-classes are more likely to consider themselves as enjoying wellbeing as long as they can work, whereas the middle- and upper-classes equate wellbeing not only with being able to work, but also with certain aesthetic and fitness standards (for example, not being overweight and being able to participate in leisure activities with others) (Bourdieu, 1979; Shilling, 2012).
+
+Additionally, the differences in wellbeing between the sexes observed can be seen explained to an extent by Bourdieu’s work. As men have expectations of being seen as macho, they are more likely to respond positively when asked how they are, regardless of the truth. This is seen with men being notoriously poor at recognising and seeking help when they have mental or physical health issues. Indeed, this pressure to always be seen as being ‘okay’ could significantly have affected our results, and be exacerbated by the notorious issues with responses to face-to-face surveys, as people often lie to fulfil social expectations (for example, saying they have voted when asked, whether they did or not). Again, this is differentiated by class, with working-class men under the greatest pressure, which perhaps explains our unexpected results.
+
+From our longitudinal analysis we can conclude that the influence of sex, age, income and education have had a consistent effect on wellbeing over the period covered by our survey data. This conclusion can be used to argue against Giddens’s (1991, 1999) suggestion that the accelerated change and individualisation typical of late modernity has decreased the importance of traditional markers of social background on individuals’ lives and, specifically, wellbeing.
+
+In terms of the impact of our study, we are most notably filling a gap in research on the effect education has on wellbeing, as it is an area of study that “lags behind” other areas in terms of its impact on wellbeing (Pinxten and Lievens, 2014: 1096). As we found that there is a positive correlation between education and wellbeing, the emphasis on encouraging and facilitating the education of individuals arguably takes on even greater importance. Indeed, this supports Abel’s (2007: 43) conclusion that “health promotion practice should give increased attention” to educating individuals about health “at the early stages of intervention planning”.
 
 # To Do
+
+
+Test|table
+----|----
+Cell|content
+Number|2
 
 EVALUATE CHANGES (WHETHER THEY MAKE ANY DISCERNIBLE DIFFERENCE OR NOT) FROM LAST SECTION (e.g. add bit about age having a tiny difference in wellbeing score despite being statistically significant) – also add (p < 0.05) for statistical significance etc. - edit down descriptive section (remove attempted explanations, keep for discussion/conclusion)
