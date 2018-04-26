@@ -3,9 +3,8 @@ title: "Untitled"
 author: '660032036'
 date: "18 April 2018"
 output:
-  word_document: default
   html_document: default
-  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE, cache = TRUE}
@@ -78,7 +77,7 @@ dnaI <- dmeltI %>%
   mutate(racelo = ifelse(racelo < 96, racelo, NA))
 ```
 
-Initially, our research aimed to include ethnicity as a factor in our analysis. However, when checking our dataset, we realised that both variables for ethnicity had vast numbers of ‘NA’ values in each wave, with the ethnicity of the participant coded seemingly randomly across the waves of the data. Due to the limitations of this assignment, we decided simply to remove this variable. This process is shown below:
+Initially, our research aimed to include ethnicity as a factor in our analysis. However, when checking our dataset, we realised that both variables for ethnicity had vast numbers of ‘NA’ values in each wave, with the ethnicity of the participant coded inconsistently across the waves of the data. Due to the limitations of this assignment, we decided simply to remove this variable. This process is shown below:
 
 ```{r race, cache = TRUE, message = FALSE, warning = FALSE}
 # Subsetting the data frame into individual waves
@@ -94,6 +93,8 @@ summary(W1)
 summary(W7)
 
 dnaI <- subset(dnaI, , -c(racel, racelo, fimngrs))
+
+# We have also removed the 'gross monthly income' variable, as working with 'net monthly income' should allow a sufficiently clear look at income and wellbeing.
 ```
 
 The final step in preparing our data involved, firstly, recoding the answers given as numerical values to descriptive labels. We also combined equivalent qualifications, reducing the number of variables. These changes made our descriptive analyses both easier to carry out, and the results easier to interpret.
