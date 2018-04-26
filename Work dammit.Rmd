@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Exploring wellbeing: How does education and income impact individual wellbeing?"
 author: '660032036'
 date: "18 April 2018"
 output:
@@ -13,9 +13,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-Health is an enormously important topic in sociology; for example, unequal morbidity and mortality rates are key indicators of social inequalities. However, while the differentiation between classes has been shown to be one of the “most enduring and incontrovertible indicators” of perceptions of personal health (referred to as wellbeing from this point on), it has been argued that more research is required in order to fully understand the dynamics of the social divides in wellbeing (Bennet et al., 2009: 152; Mackenback, 2012; Pinxten and Lievens, 2014). This essay therefore aims to further current research into wellbeing by taking into account sex, education and income: factors that may well contribute to wellbeing. As an individual’s life is separated into two main parts, their time in education and their time working, it makes sense to analyse the effects of both of these variables on individual wellbeing. Additionally, with male suicide rates over three times as high as female suicide rates, the difference in wellbeing between the sexes is as important as ever. [Samaritans site]
+Health is an enormously important topic in sociology; for example, unequal morbidity and mortality rates are key indicators of social inequalities. However, while the differentiation between classes has been shown to be one of the “most enduring and incontrovertible indicators” of perceptions of personal health (referred to as wellbeing from this point on), it has been argued that more research is required in order to fully understand the dynamics of the social divides in wellbeing (Bennet et. al., 2009: 152; Mackenbach, 2012; Pinxten and Lievens, 2014). This essay therefore aims to further current research into wellbeing by taking into account sex, education and income: factors that may well contribute to wellbeing. As an individual’s life is separated into two main parts, their time in education and their time working, it makes sense to analyse the effects of both of these variables on individual wellbeing. Additionally, with male suicide rates over three times as high as female suicide rates (Samaritans, 2017), the difference in wellbeing between the sexes is as important as ever.
 
-Our research question is ‘How is wellbeing distributed across the sexes, and what is the effect of different levels of education and income on wellbeing?’.
+Our research questions are 'How is wellbeing distributed across the sexes and educational qualifications, and are these relationships consistent over time?' and 'What is the relationship between wellbeing and the variables income and age, and does an individuals' wellbeing change as they age or their income changes?'. Our hypotheses are 'Women report higher wellbeing than men'; 'The more educated an individual, the higher the reported wellbeing'; 'The relationships between wellbeing and sex, and wellbeing and education, are consistent over time'; 'There is a positive relationship between income and wellbeing'; 'There is a negative relationship between age and wellbeing'; and finally 'An individuals' wellbeing changes as they age or as their income changes'.
 
 To carry out this analysis, we will be using the Understanding Society dataset, a longitudinal study of approximately 40,000 households in the United Kingdom, carried out from 2009-2016 and of a nationally representative sample. Each participant aged 16 and over completed an individual, face-to-face interview and a self-completed questionnaire, with one person in each household completing the household questionnaire.
 
@@ -371,12 +371,8 @@ s %>%
 This change in coding made had a substantial effect on the outcome, although the bottom fifth of earners still represent an outlier in mean average wellbeing. Interestingly, this group seemed to be least effected by the general slump in average wellbeing from 2011-2013, going from second bottom to second top (in mean average wellbeing) over this period. One possible explanation for the bottom fifth still being an outlier is retirees, whose net monthly income may not be very high, but whose savings may help them spend well. We correct for this by sub-setting our data to only include those under 65 (the retirement age in the UK), though this has very little difference overall, suggesting other factors are influential in this outlier.
 
 ```{r income y1, cache = TRUE, message = FALSE, warning = FALSE}
-y <- subset(s, dvage < '65',
+y1 <- subset(s, dvage < 65,
            select = c(1:9))
-
-table(y$dvage)
-
-y1 <- subset(y, dvage!= 100)
 
 table(y1$dvage)
 
@@ -388,8 +384,6 @@ y1 %>%
   ggplot(aes(x = year, y = meanWb, colour = income)) +
   geom_point() +
   geom_line()
-
-# Note: for some reason, one respondent who was 100 was not removed by the initial sub-setting, hence having to subset the data a second time. 
 ```
 
 The final part of our descriptive analysis involves splitting this final graph by sex, given the notable difference it made in wellbeing generally. Indeed, by segregating between sexes, this graph shows some remarkable trends. Much like for education, there is only one level of income that women have a higher mean average wellbeing than men, in this case the second fifth of respondents. For every other level of income, men have a higher mean average wellbeing each year, almost without exception. Arguably just as notably is the mean average wellbeing for the bottom fifth of earners when split by sex. For men, this group’s wellbeing hovers around the same level as those in the second highest bracket of earners, and nearly matches those in the top bracket of earners in the most recent wave of survey data. For women, the bottom 20% of earners are either similar to the lowest mean average level for wellbeing, or indeed score lowest. Furthermore, the difference between the male and female levels for wellbeing are most different in this category overall, by some distance, with only the sex divide in wellbeing for the top 20% of earners being comparable, in 2013.
@@ -606,3 +600,23 @@ In terms of the impact of our study, we are most notably filling a gap in resear
 # Conclusion
 
 Our investigation found that wellbeing fell across the population from 2011-2013, before rising to similar levels of 2009 & 2010 in 2014 & 2015. We found that there was statistically significant difference in wellbeing between the sexes, with men reporting a higher wellbeing than women. This difference did not change over time. We also found that wellbeing decreased with age, before increasing near the age of retirement, then decreasing again. However, there was no statistically significant change in wellbeing observed as individuals aged. There were significant differences in wellbeing between education levels in our dataset, which were again stable over time. Finally, while the top 80% of income were positively correlated with wellbeing, the bottom 20% were not. Further investigation  here in particular would be useful.
+
+# Reference List
+
+Abel, T. (2007) ‘Cultural capital in health promotion’, in D. McQueen, I. Kickbusch, L. Potvin, J.M. Pelikan, L. Balbo and T. Abel (eds), Health and Modernity. New York: Springer.
+
+Bennett, T., Savage, M., Silva, E., Warde, A., Modesto, G-C. and Wright, D. (2009) Culture, Class, Distinction. London: Routledge.
+
+Bourdieu, P. (1979) Distinction: A Social Critique of the Judgement of Taste. London: Routledge.
+
+Giddens, A. (1991) Modernity and Self-Identity. Stanford, CA: Stanford University Press.
+
+Giddens A. (1999) ‘Risk and responsibility’, The Modern Law Review, 62(1): 1–10.
+
+Mackenbach, J.P. (2012) ‘The persistence of health inequalities in modern welfare states: the explanation of a paradox’, Social Science & Medicine, 75(4): 761–9.
+
+Pinxten, W. and Lievens, J. (2014) 'The importance of economic, social and cultural capital in understanding health inequalities: using a Bourdieu-based approach in research on physical and mental health perceptions', Sociology of Health and Illness, 36(7): 1095-1110.
+
+Samaritans, (2017) 'Suicide: Facts and Figures', https://www.samaritans.org/about-us/our-research/facts-and-figures-about-suicide. Accessed 26 April.
+
+Shilling, C. (2012) The Body and Social Theory, 3rd Edition. London: Sage.
