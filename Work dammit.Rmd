@@ -77,7 +77,7 @@ dnaI <- dmeltI %>%
   mutate(racelo = ifelse(racelo < 96, racelo, NA))
 ```
 
-Initially, our research aimed to include ethnicity as a factor in our analysis. However, when checking our dataset, we realised that both variables for ethnicity had vast numbers of ‘NA’ values in each wave, with the ethnicity of the participant coded inconsistently across the waves of the data. Due to the limitations of this assignment, we decided simply to remove this variable. This process is shown below:
+Initially, our research aimed to include ethnicity as a factor in our analysis, a factor Grineski (2009) identifies as influencing wellbeing. However, when checking our dataset, we realised that both variables for ethnicity had vast numbers of ‘NA’ values in each wave, with the ethnicity of the participant coded inconsistently across the waves of the data. Due to the limitations of this assignment, we decided simply to remove this variable. This process is shown below:
 
 ```{r race, cache = TRUE, message = FALSE, warning = FALSE}
 # Subsetting the data frame into individual waves
@@ -101,15 +101,30 @@ The final step in preparing our data involved, firstly, recoding the answers giv
 
 ```{r clean, cache = TRUE, message = FALSE, warning = FALSE}
 dcleanI <- na.omit(dnaI) %>%
-  mutate(qfhigh = recode(qfhigh, "1" = "1-Higher degree", "2" = "2-Degree/equiv", "3" = "3-Higher ed",
-                         "4" = "3-Higher ed", "5" = "3-Higher ed", "6" = "3-Higher ed",
-                         "7" = "4-A level/equiv", "8" = "4-A level/equiv", "9" = "4-A level/equiv",
-                         "10" = "5-AS level/equiv", "11" = "5-AS level/equiv", "12" = "5-AS level/equiv",
-                         "13" = "6-GCSE/equiv", "14" = "7-CSE", "15" = "6-GCSE/equiv", "16" = "8-Other school cert")) %>%
+  mutate(qfhigh = recode(qfhigh, "1" = "1-Higher degree",
+                         "2" = "2-Degree/equiv",
+                         "3" = "3-Higher ed",
+                         "4" = "3-Higher ed",
+                         "5" = "3-Higher ed",
+                         "6" = "3-Higher ed",
+                         "7" = "4-A level/equiv",
+                         "8" = "4-A level/equiv",
+                         "9" = "4-A level/equiv",
+                         "10" = "5-AS level/equiv",
+                         "11" = "5-AS level/equiv",
+                         "12" = "5-AS level/equiv",
+                         "13" = "6-GCSE/equiv",
+                         "14" = "7-CSE",
+                         "15" = "6-GCSE/equiv",
+                         "16" = "8-Other school cert")) %>%
   mutate(qfhigh = factor(qfhigh)) %>%
-  mutate(sclfsat1 = recode(sclfsat1, "1" = "1-completely dissatisfied", "2" = "2-mostly dissatisfied",
-                           "3" = "3-somewhat dissatisfied", "4" = "4-neither satisfied or dissatisfied",
-                           "5" = "5-somewhat satisfied", "6" = "6-mostly satisfied", "7" = "7-completely satisfied")) %>%
+  mutate(sclfsat1 = recode(sclfsat1, "1" = "1-completely dissatisfied",
+                           "2" = "2-mostly dissatisfied",
+                           "3" = "3-somewhat dissatisfied",
+                           "4" = "4-neither satisfied or dissatisfied",
+                           "5" = "5-somewhat satisfied",
+                           "6" = "6-mostly satisfied",
+                           "7" = "7-completely satisfied")) %>%
   mutate(sclfsat1 = factor(sclfsat1)) %>%
   mutate(sex = recode(sex, "1" = "male", "2" = "female")) %>%
   mutate(sex = factor(sex)) %>% 
@@ -127,11 +142,22 @@ Secondly, we recorded our initial data to include the responses to wellbeing as 
 
 ```{r cont, cache = TRUE, message = FALSE, warning = FALSE}
 dcontI <- na.omit(dnaI) %>%
-  mutate(qfhigh = recode(qfhigh, "1" = "1-Higher degree", "2" = "2-Degree/equiv", "3" = "3-Higher ed",
-                         "4" = "3-Higher ed", "5" = "3-Higher ed", "6" = "3-Higher ed",
-                         "7" = "4-A level/equiv", "8" = "4-A level/equiv", "9" = "4-A level/equiv",
-                         "10" = "5-AS level/equiv", "11" = "5-AS level/equiv", "12" = "5-AS level/equiv",
-                         "13" = "6-GCSE/equiv", "14" = "7-CSE", "15" = "6-GCSE/equiv", "16" = "8-Other school cert")) %>%
+  mutate(qfhigh = recode(qfhigh, "1" = "1-Higher degree",
+                         "2" = "2-Degree/equiv",
+                         "3" = "3-Higher ed",
+                         "4" = "3-Higher ed",
+                         "5" = "3-Higher ed",
+                         "6" = "3-Higher ed",
+                         "7" = "4-A level/equiv",
+                         "8" = "4-A level/equiv",
+                         "9" = "4-A level/equiv",
+                         "10" = "5-AS level/equiv",
+                         "11" = "5-AS level/equiv",
+                         "12" = "5-AS level/equiv",
+                         "13" = "6-GCSE/equiv",
+                         "14" = "7-CSE",
+                         "15" = "6-GCSE/equiv",
+                         "16" = "8-Other school cert")) %>%
   mutate(qfhigh = factor(qfhigh)) %>%
   mutate(sex = recode(sex, "1" = "male", "2" = "female")) %>%
   mutate(sex = factor(sex)) %>% 
@@ -159,30 +185,44 @@ First, we looked at the distribution of wellbeing across each wave of the data, 
 
 ```{r wellbeing by year, cache = TRUE, message = FALSE, warning = FALSE}
 dcontI %>%
- group_by(year) %>%
- summarise(
+  group_by(year) %>%
+  summarise(
    meanWb = mean(sclfsat1, na.rm = TRUE)
- ) %>%
- ggplot(aes(x = year, y = meanWb)) +
- geom_point() +
- geom_line()
+  ) %>%
+  ggplot(aes(x = year, y = meanWb)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Figure 1",
+       subtitle = "Mean Wellbeing by Year",
+       x = "Year",
+       y = "Mean Wellbeing")
 ```
 
 For a more detailed look at the trend in wellbeing over time, we looked at the proportion of responses for each level of wellbeing in each year of our data. The number of people both ‘mostly’ and ‘completely’ dissatisfied with their wellbeing decreased dramatically from 2010 to 2011, and a large reduction in the number ‘mostly satisfied’ with their wellbeing was also noticeable. While the number of people either ‘mostly’ or ‘completely’ dissatisfied with their wellbeing slowly decreased over this period, there was only a slight increase in 2012 of those ‘mostly satisfied’ with their wellbeing (again, perhaps due to the Olympics?), and the number ‘completely satisfied’ with their wellbeing continued to decrease. However, the number of people ‘mostly’ and ‘completely’ satisfied with their wellbeing almost returned to 2010 levels in 2014, and continued to improve in 2015, with those ‘mostly’ and ‘completely’ dissatisfied with their health seeing a similar drop.
 
 ```{r wellbeing breakdown, cache = TRUE, message = FALSE, warning = FALSE}
 ggplot(dcleanI, aes(x = year, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
+  geom_bar(position = 'fill') +
+  labs(title = "Figure 2",
+       subtitle = "Proportion of Wellbeing responses by Year",
+       x = "Year",
+       y = "Proportion of Wellbeing responses")
+
+# Note: This legend applies for all other charts with this colour scheme, unless otherwise stated. To make future charts easier to interpret, refer back to this legend.
 ```
 
 This second chart allows us a closer look at the differences in wellbeing across the first, fourth and final waves of the data.
 
 ```{r select few, cache = TRUE, message = FALSE, warning = FALSE}
-Wc <- subset(dcleanI, wave == c('a', 'd', 'g'),
-             select = c(1:7))
+Wc <- subset(dcleanI, wave == c('a', 'd', 'g'), select = c(1:8))
 
 ggplot(Wc, aes(x = wave, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
+  geom_bar(position = 'fill') +
+  labs(title = "Figure 3",
+       subtitle = "Proportion of Wellbeing responses in Waves 1, 4 & 7",
+       x = "Year",
+       y = "Proportion of Wellbeing responses") +
+  theme(legend.position = "none")
 ```
 
 ### Differentiating by sex
@@ -197,7 +237,11 @@ dcontI %>%
   ) %>%
   ggplot(aes(x = year, y = meanWb, colour = sex, linetype = sex, shape = sex)) +
   geom_point() +
-  geom_line()
+  geom_line() +
+  labs(title = "Figure 4",
+       subtitle = "Mean Wellbeing split by Sex",
+       x = "Year",
+       y = "Mean Wellbeing")
 ```
 
 This shows a clear and consistent difference in wellbeing between the sexes, as per our hypothesis. Interestingly, however, average wellbeing for men is higher than for women, going against our hypothesis that men will have a lower average wellbeing than women.
@@ -207,7 +251,12 @@ Next, for a quick overview of the differences between wellbeing of men and women
 ```{r sex coxcomb, cache = TRUE, message = FALSE, warning = FALSE}
 ggplot(dcleanI, aes(x = sex, fill = sclfsat1)) +
   geom_bar(position = 'fill') +
-  coord_polar(theta = 'y')
+  coord_polar(theta = 'y') +
+  labs(title = "Figure 5",
+       subtitle = "Proportion of Wellbeing responses split by Sex",
+       x = "Sex",
+       y = "Proportion of Wellbeing responses") +
+  theme(legend.position = "none")
 ```
 
 To have a closer look at this difference, we compared the individual responses to wellbeing given by respondents over each wave. Using violin plots (below), we can see that for 2009 and 2010, the proportion of women who were ‘completely satisfied’ with their wellbeing is in fact higher than the proportion of men who said the same, despite the reverse being true for the categories ‘mostly’ and ‘somewhat’ satisfied. This is only true for these two years though, as following this, men had a higher proportion of responses in the positive categories for wellbeing. For each year, there was a higher proportion of women who were ‘completely dissatisfied’ with their wellbeing than men, though the overall proportion of people ‘completely dissatisfied’ than ‘completely satisfied’ was much lower, as indicated below.
@@ -218,10 +267,18 @@ fe <- subset(dcontI, sex == 'female')
 m <- subset(dcontI, sex == 'male')
 
 ggplot(fe, aes(x = wave, y = sclfsat1, fill = wave)) +
-  geom_violin()
+  geom_violin() +
+  labs(title = "Figure 6",
+       subtitle = "Proportion of Wellbeing responses for Women",
+       x = "Wave",
+       y = "Proportion of Wellbeing responses")
 
 ggplot(m, aes(x = wave, y = sclfsat1, fill = wave)) +
-  geom_violin()
+  geom_violin() +
+  labs(title = "Figure 7",
+       subtitle = "Proportion of Wellbeing responses for Men",
+       x = "Wave",
+       y = "Proportion of Wellbeing responses")
 
 table(fe$sclfsat1, fe$wave)
 
@@ -244,9 +301,11 @@ dcontI %>%
  ) %>%
  ggplot(aes(x = year, y = meanWb, colour = qfhigh)) +
  geom_point() +
- geom_line()
-
-head(dcontI)
+ geom_line() +
+  labs(title = "Figure 8",
+       subtitle = "Mean Wellbeing split by Education",
+       x = "Year",
+       y = "Mean Wellbeing")
 ```
 
 This shows some clear differences between levels of education and wellbeing, though not entirely as we predicted. A- and AS-levels appear to be interchangeable when evaluating their effect on wellbeing, although in 2013 those with AS-levels had, proportionally, an unusually high wellbeing mean average (even higher than those with a degree or equivalent). Further, those with AS-Levels were the only group whose wellbeing did not increase from 2011 to 2012. Interestingly, respondents with higher education, such as a 'teaching qualification (excluding pgce)', have similar scores of wellbeing as those with just GCSE/equivalent qualifications; noticeably lower than those with AS- or A-levels, or university degrees. Finally, those with ‘Other school certificates’ have a higher mean average than those with ‘CSE’s, with the exception of 2015.
@@ -255,14 +314,25 @@ For a closer overall look between education levels, we created a stacked bar-cha
 
 ```{r edu breakdown, cache = TRUE, message = FALSE, warning = FALSE}
 ggplot(dcleanI, aes(x = qfhigh, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
+  geom_bar(position = 'fill') +
+  labs(title = "Figure 9",
+       subtitle = "Proportion of Wellbeing responses split by Education",
+       x = "Education",
+       y = "Proportion of Wellbeing responses") +
+  theme(legend.position = "none")
 
-Wd <- subset(dcleanI, qfhigh == c('1-Higher degree', '4-A level/equiv', '7-CSE'),
-             select = c(1:7))
+Wd <- subset(dcleanI, qfhigh == c('1-Higher degree',
+                                  '4-A level/equiv',
+                                  '7-CSE'), select = c(1:7))
 
 ggplot(Wd, aes(x = qfhigh, fill = sclfsat1)) +
   geom_bar(position = 'fill') +
-  coord_polar(theta = 'y')
+  coord_polar(theta = 'y') +
+  labs(title = "Figure 10",
+       subtitle = "Proportion of Wellbeing responses split for 'CSEs', 'A-Levels' and 'Higher degrees'",
+       x = "Education",
+       y = "Proportion of Wellbeing responses") +
+  theme(legend.position = "none")
 ```
 
 While this analysis is more detailed than our initial line-graph, we were able to develop this further by analysing these three qualification levels by each wave of data. This shows us that during the overall slump in wellbeing from 2011-2013, the proportion of those who were ‘completely’ and ‘mostly’ dissatisfied with their wellbeing increased the most in respondents with the highest education levels. However, the inverse is not true for those ‘completely’ and ‘mostly’ satisfied with their wellbeing, as it is those with A-levels, not with higher degrees who were least effected; in fact, the proportion of those with A-levels who were ‘completely satisfied’ with their wellbeing actually increased from 2010-2011.
@@ -278,13 +348,28 @@ CSE <- subset(dcleanI, qfhigh == '7-CSE',
               select = c(wave, sclfsat1))
 
 ggplot(High, aes(x = wave, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
+  geom_bar(position = 'fill') +
+  labs(title = "Figure 11",
+       subtitle = "Proportion of Wellbeing responses for 'Higher degrees'",
+       x = "Wave",
+       y = "Proportion of Wellbeing responses") +
+  theme(legend.position = "none")
 
 ggplot(A.l, aes(x = wave, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
+  geom_bar(position = 'fill') +
+  labs(title = "Figure 12",
+       subtitle = "Proportion of Wellbeing responses for 'A-Levels'",
+       x = "Wave",
+       y = "Proportion of Wellbeing responses") +
+  theme(legend.position = "none")
 
 ggplot(CSE, aes(x = wave, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
+  geom_bar(position = 'fill') +
+  labs(title = "Figure 13",
+       subtitle = "Proportion of Wellbeing responses for 'CSEs'",
+       x = "Wave",
+       y = "Proportion of Wellbeing responses") +
+  theme(legend.position = "none")
 ```
 
 Following our analysis of the split between the sexes and wellbeing, it would be remiss not to compare this divide in wellbeing when analysing education. This analysis shows that the split between the sexes is exaggerated by certain education levels. Those who are least well educated (CSEs) have substantially higher levels of wellbeing for men than for women, and men with GCSEs have similar levels of wellbeing to those with A-levels and higher education, whereas for women those with GCSEs and higher education have substantially lower levels of wellbeing than those with A- and AS- levels. Interestingly, men with AS-levels and higher university degrees have the highest levels of wellbeing in men, where women with higher university degrees and university degrees have the highest levels of wellbeing in women. The only qualification where women score higher on wellbeing than men is university degrees.
@@ -297,7 +382,11 @@ dcontI %>%
  ) %>%
  ggplot(aes(x = year, y = meanWb, colour = qfhigh, linetype = sex, shape = sex)) +
  geom_point() +
- geom_line()
+ geom_line() +
+  labs(title = "Figure 14",
+       subtitle = "Mean Wellbeing split by Education and Sex",
+       x = "Year",
+       y = "Mean Wellbeing")
 ```
 
 ### Differentiating by income
@@ -320,7 +409,12 @@ Our first graph is an overview of the dataset when segregating respondents by in
 
 ```{r income overview, cache = TRUE, message = FALSE, warning = FALSE}
 ggplot(sc, aes(x = income, fill = sclfsat1)) +
-  geom_bar(position = 'fill')
+  geom_bar(position = 'fill') +
+  labs(title = "Figure 15",
+       subtitle = "Proportion of Wellbeing responses for Income",
+       x = "Income Quintile",
+       y = "Proportion of Wellbeing responses") +
+  theme(legend.position = "none")
 
 table(sc$sclfsat1, sc$income)
 ```
@@ -345,7 +439,11 @@ t %>%
   ) %>%
   ggplot(aes(x = year, y = meanWb, colour = income)) +
   geom_point() +
-  geom_line()
+  geom_line() +
+  labs(title = "Figure 16",
+       subtitle = "Mean Wellbeing split by Income",
+       x = "Year",
+       y = "Mean Wellbeing")
 
 quantile(dcontI$fimnnet[dcontI$fimnnet > 0], seq(0, 1, 0.2))
 
@@ -365,7 +463,11 @@ s %>%
   ) %>%
   ggplot(aes(x = year, y = meanWb, colour = income)) +
   geom_point() +
-  geom_line()
+  geom_line() +
+  labs(title = "Figure 17",
+       subtitle = "Mean Wellbeing split by Income (of over 0)",
+       x = "Year",
+       y = "Mean Wellbeing")
 ```
 
 This change in coding made had a substantial effect on the outcome, although the bottom fifth of earners still represent an outlier in mean average wellbeing. Interestingly, this group seemed to be least effected by the general slump in average wellbeing from 2011-2013, going from second bottom to second top (in mean average wellbeing) over this period. One possible explanation for the bottom fifth still being an outlier is retirees, whose net monthly income may not be very high, but whose savings may help them spend well. We correct for this by sub-setting our data to only include those under 65 (the retirement age in the UK), though this has very little difference overall, suggesting other factors are influential in this outlier.
@@ -383,7 +485,11 @@ y1 %>%
   ) %>%
   ggplot(aes(x = year, y = meanWb, colour = income)) +
   geom_point() +
-  geom_line()
+  geom_line() +
+  labs(title = "Figure 18",
+       subtitle = "Mean Wellbeing split by Income (of over 0, excluding pensioners)",
+       x = "Year",
+       y = "Mean Wellbeing")
 ```
 
 The final part of our descriptive analysis involves splitting this final graph by sex, given the notable difference it made in wellbeing generally. Indeed, by segregating between sexes, this graph shows some remarkable trends. Much like for education, there is only one level of income that women have a higher mean average wellbeing than men, in this case the second fifth of respondents. For every other level of income, men have a higher mean average wellbeing each year, almost without exception. Arguably just as notably is the mean average wellbeing for the bottom fifth of earners when split by sex. For men, this group’s wellbeing hovers around the same level as those in the second highest bracket of earners, and nearly matches those in the top bracket of earners in the most recent wave of survey data. For women, the bottom 20% of earners are either similar to the lowest mean average level for wellbeing, or indeed score lowest. Furthermore, the difference between the male and female levels for wellbeing are most different in this category overall, by some distance, with only the sex divide in wellbeing for the top 20% of earners being comparable, in 2013.
@@ -396,7 +502,11 @@ y1 %>%
   ) %>%
   ggplot(aes(x = year, y = meanWb, colour = income, linetype = sex)) +
   geom_point() +
-  geom_line()
+  geom_line() +
+  labs(title = "Figure 19",
+       subtitle = "Mean Wellbeing split by Income (of over 0, excluding pensioners) and Sex",
+       x = "Year",
+       y = "Mean Wellbeing")
 ```
 
 Unfortunately, visualising the differences in wellbeing between respondents with different levels of income, education, and of different sexes is impractical, and this comparison will be left for statistical analysis (shown below is the graph split by each of these three factors. Aside from a couple of notable outliers, it is almost entirely uninterpretable).
@@ -409,7 +519,11 @@ y1 %>%
   ) %>%
   ggplot(aes(x = year, y = meanWb, colour = income, linetype = sex, shape = qfhigh)) +
   geom_point() +
-  geom_line()
+  geom_line() +
+  labs(title = "Figure 20",
+       subtitle = "Mean Wellbeing split by Income (of over 0, excluding pensioners), Sex and Ediucation",
+       x = "Year",
+       y = "Mean Wellbeing")
 ```
 
 # Statistical analysis
@@ -432,7 +546,11 @@ This shows that, in our sample, the older the respondent, generally the lower sc
 W7 %>%
   ggplot(aes(x = dvage, y = sclfsat1)) +
   geom_smooth() +
-  geom_smooth(method = "lm", colour = "red", se = FALSE)
+  geom_smooth(method = "lm", colour = "red", se = FALSE) +
+  labs(title = "Figure 21",
+       subtitle = "Trend in Wellbeing by Age",
+       x = "Age",
+       y = "Wellbeing")
 ```
 
 This graph shows that a linear model seems to fit the relationship between age and wellbeing quite well to an extent; the linear model fits less well at what looks to roughly be the age of retirement. Therefore, we run our model, and the visualisation of this, again, taking account of this observation.
@@ -447,7 +565,11 @@ summary(agepen)
 W7p %>%
   ggplot(aes(x = dvage, y = sclfsat1)) +
   geom_smooth() +
-  geom_smooth(method = "lm", colour = "red", se = FALSE)
+  geom_smooth(method = "lm", colour = "red", se = FALSE) +
+  labs(title = "Figure 22",
+       subtitle = "Trend in Wellbeing by Age (excluding pensioners)",
+       x = "Age",
+       y = "Wellbeing")
 ```
 
 This model shows again, the relationship between age and wellbeing is statistically significant at the 99% confidence level (p < 0.01), and that the difference between people of different ages is slightly larger (wellbeing smaller by 0.011 compared to 0.009 for each year between respondents). The graph fits a linear model better than our last attempt, though not perfectly. Interestingly, the graph shows a slight uptick in wellbeing in the couple of years before the age of retirement, which, returning to our previous graph, continues for a few years afterwards then drops again. Whether this relationship remains statistically significant when controlling for the other variables we are analysing will be considered later.
@@ -462,7 +584,11 @@ summary(income)
 W7 %>%
   ggplot(aes(x = fimnnet, y = sclfsat1)) +
   geom_smooth() +
-  geom_smooth(method = "lm", colour = "red", se = FALSE)
+  geom_smooth(method = "lm", colour = "red", se = FALSE) +
+  labs(title = "Figure 23",
+       subtitle = "Trend in Wellbeing by Income",
+       x = "Net Monthly Income",
+       y = "Wellbeing")
 ```
 
 Our model shows there is a statistically significant relationship (at the 99% confidence level, p < 0.01) between income and wellbeing, though our visualisation of this relationship shows that our model may not be best suited to capturing this relationship. Indeed, as indicated in our descriptive analysis previously, the relationship between income and wellbeing is less clear for respondents with low, or negative, monthly income. In fact, our next graph shows this relationship become far clearer (and indeed, as our new model shows, has a larger effect (7.256e-05 compared to 3.951e-05)) for respondents who earn over £800 a month, equating to £9,600 a year. Interestingly, this is roughly the amount an individual on minimum wage, working a 40-hour week for 45 weeks (taking into account bank-holidays and standard holiday allowance) will earn after tax (shown below). It seems, therefore, that when in full time employment, wellbeing increases with income (until about £8,000 a month at which point the effect tails off), though for individuals earning less than this there are a number of other confounding factors.
@@ -474,7 +600,11 @@ W7r1 <- subset(W7, fimnnet > 800,
 W7r1 %>%
   ggplot(aes(x = fimnnet, y = sclfsat1)) +
   geom_smooth() +
-  geom_smooth(method = "lm", colour = "red", se = FALSE)
+  geom_smooth(method = "lm", colour = "red", se = FALSE) +
+  labs(title = "Figure 24",
+       subtitle = "Trend in Wellbeing by Income (above £800)",
+       x = "Net Monthly Income",
+       y = "Wellbeing")
 
 incomer1 <- lm(sclfsat1 ~ fimnnet, W7r1)
 summary(incomer1)
@@ -492,8 +622,12 @@ edu <- lm(sclfsat1 ~ factor(qfhigh), W7)
 summary(edu)
 
 W7 %>%
-  ggplot(aes(x = qfhigh, y = sclfsat1)) +
-  geom_bar(stat = "summary", fun.y = "mean")
+  ggplot(aes(x = qfhigh, y = sclfsat1, fill = qfhigh)) +
+  geom_bar(stat = "summary", fun.y = "mean") +
+  labs(title = "Figure 25",
+       subtitle = "Wellbeing by Education",
+       x = "Education",
+       y = "Wellbeing")
 ```
 
 Finally, we evaluated the relationship between wellbeing and sex. As our descriptive analysis suggests, men have a higher wellbeing score than women. Our models allows us to see that the difference between the two is statistically significant at the 99.9% confidence interval (p < 0.001), and the difference is shown in the below graph. However, though significant, the magnitude of this effect is fairly small (0.10).
@@ -504,8 +638,12 @@ sex <- lm(sclfsat1 ~ factor(sex), W7)
 summary(sex)
 
 W7 %>%
-  ggplot(aes(x = sex, y = sclfsat1)) +
-  geom_bar(stat = "summary", fun.y = "mean")
+  ggplot(aes(x = sex, y = sclfsat1, fill = sex)) +
+  geom_bar(stat = "summary", fun.y = "mean") +
+  labs(title = "Figure 26",
+       subtitle = "Wellbeing by Sex",
+       x = "Sex",
+       y = "Wellbeing")
 ```
 
 Having evaluated the significance of our variables with wellbeing separately, we then create a linear model where we control for each of the variables, to see if this significance holds. We see that the significance of age, income, and sex are unchanged (all significant at the 99% confidence level, p < 0.01), with largely similar magnitudes of effect as well. Interestingly, the difference between those who have higher degrees and those with AS-levels is now statistically significant at the 95% confidence level (p < 0.05), and has a similar magnitude of effect as those with A-levels. Additionally, the magnitude of the effect of those respondents with higher education (e.g. a teaching qualification but not a pgce) has decreased, meaning there is now a noticeable difference between them and those with GCSEs. Finally, the magnitude of the effect on wellbeing of respondents with CSEs and ‘Other school certificates’ has decreased to -0.3001 from -0.4185 and to -0.3154 from -0.5284 respectively.
@@ -530,7 +668,7 @@ summary(welllong)
 
 Our results show that each year is statistically different at least at the 95% confidence level (p < 0.05), and that the magnitude of this effect varies, though is fairly small in 2010 and 2015.
 
-From our descriptive analysis section (Figure WHAT) we can see that the wellbeing for men and women seems to follow the same pattern, with no real change in the wellbeing between the sexes. To do this, we use interaction effects between year and sex in a linear regression model.
+From our descriptive analysis section (Figure 4) we can see that the wellbeing for men and women seems to follow the same pattern, with no real change in the wellbeing between the sexes. To do this, we use interaction effects between year and sex in a linear regression model.
 
 ```{r sex long, cache = TRUE, message = FALSE, warning = FALSE}
 sexlong <- lm(sclfsat1 ~ as.factor(year) * sex, data = dcontI)
@@ -612,6 +750,8 @@ Bourdieu, P. (1979) Distinction: A Social Critique of the Judgement of Taste. Lo
 Giddens, A. (1991) Modernity and Self-Identity. Stanford, CA: Stanford University Press.
 
 Giddens A. (1999) ‘Risk and responsibility’, The Modern Law Review, 62(1): 1–10.
+
+Grineski, S.E. (2009) ‘Parental accounts of children’s asthma care: the role of cultural and social capital in health disparities’, Sociological Focus, 42(2): 107–32.
 
 Mackenbach, J.P. (2012) ‘The persistence of health inequalities in modern welfare states: the explanation of a paradox’, Social Science & Medicine, 75(4): 761–9.
 
