@@ -3,8 +3,8 @@ title: "Exploring wellbeing: How does education and income impact individual wel
 author: '660032036'
 date: "18 April 2018"
 output:
-  html_document: default
   word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE, cache = TRUE}
@@ -13,19 +13,27 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-Health is an enormously important topic in sociology; for example, unequal morbidity and mortality rates are key indicators of social inequalities. However, while the differentiation between classes has been shown to be one of the “most enduring and incontrovertible indicators” of perceptions of personal health (referred to as wellbeing from this point on), it has been argued that more research is required in order to fully understand the dynamics of the social divides in wellbeing (Bennet et. al., 2009: 152; Mackenbach, 2012; Pinxten and Lievens, 2014). This essay therefore aims to further current research into wellbeing by taking into account sex, education and income: factors that may well contribute to wellbeing. As an individual’s life is separated into two main parts, their time in education and their time working, it makes sense to analyse the effects of both of these variables on individual wellbeing. Additionally, with male suicide rates over three times as high as female suicide rates (Samaritans, 2017), the difference in wellbeing between the sexes is as important as ever.
+Health is an enormously important topic in sociology; for example, unequal morbidity and mortality rates are key indicators of social inequalities. However, while class differences have been shown to be one of the “most enduring and incontrovertible indicators” of perceptions of personal health (referred to below as wellbeing), it has been argued that more research is required in order to fully understand the dynamics of the social divides in wellbeing (Bennet et. al., 2009: 152; Mackenbach, 2012; Pinxten and Lievens, 2014). This essay aims to further current research into wellbeing by analysing the impact of sex, education and income. In the UK, education and waged-work  are central to most people’s lives, thus likely to be near-universal influences on wellbeing, while it is also important to analyse the effects of sex-differences, given that male suicide rates are over three times that of female suicide rates (Samaritans, 2017).
 
-Our research questions are 'How is wellbeing distributed across the sexes and educational qualifications, and are these relationships consistent over time?' and 'What is the relationship between wellbeing and the variables income and age, and does an individuals' wellbeing change as they age or their income changes?'. Our hypotheses are 'Women report higher wellbeing than men'; 'The more educated an individual, the higher the reported wellbeing'; 'The relationships between wellbeing and sex, and wellbeing and education, are consistent over time'; 'There is a positive relationship between income and wellbeing'; 'There is a negative relationship between age and wellbeing'; and finally 'An individuals' wellbeing changes as they age or as their income changes'.
+Our research questions and hypotheses are presented in *Table 1*.
 
-To carry out this analysis, we will be using the Understanding Society dataset, a longitudinal study of approximately 40,000 households in the United Kingdom, carried out from 2009-2016 and of a nationally representative sample. Each participant aged 16 and over completed an individual, face-to-face interview and a self-completed questionnaire, with one person in each household completing the household questionnaire.
+Research Question  | Hypothesis
+----------------------------------------- | -----------------------------------------
+How is wellbeing distributed across educational qualifications, and is this relationship consistent over time? | The more educated an individual, the higher their reported wellbeing. This relationship is consistent over time.
+How is wellbeing distributed across the sexes, and is this relationship consistent over time? | Women report higher wellbeing than men. This relationship is consistent over time.
+What is the relationship between wellbeing and income, and does an individual's wellbeing change as their income changes? | There is a positive relationship between income and wellbeing. As individual income increases, so does individual wellbeing.
 
-Over this time period, there were a number of events that could have had a general effect on wellbeing across the nation. The UK entering and emerging from an economic recession, two general elections, and the 2012 Olympics were all significant events that need to be considered when analysing our data.
+To carry out this analysis, we will be using the *Understanding Society* (University of Essex, 2017) dataset, a longitudinal study of a nationally representative sample of approximately 40,000 households in the United Kingdom, carried out from 2009-2016. Each participant aged 16 and over completed an individual, face-to-face interview and a self-completed questionnaire, with one person in each household completing the household questionnaire.
+
+Over this time period, a number of national events could have affected wellbeing. The UK emerging from an economic recession, two general elections and the 2012 Olympics were all significant events that should be considered when analysing our data.
 
 # Preparing the data
 
-Our first task is to read the data into R, which is done by using the following code, after installing the necessary packages:
+Our first task was to read the data into R.
 
 ```{r loading, cache = TRUE, message = FALSE, warning = FALSE, results = 'hide'}
+# We first installed the necessary packages.
+
 library(tidyverse)
 
 library(data.table)
@@ -53,7 +61,7 @@ for (i in 1:7) {
 }
 ```
 
-To arrange the data in a way so as to facilitate analysis, the ‘wave’ the data was collected in needs to be recoded as a variable:
+To arrange the data to facilitate analysis, the ‘wave’ the data was collected in needed to be recoded as a variable.
 
 ```{r join, cache = TRUE, message = FALSE, warning = FALSE}
 dmeltI <- dI %>%
@@ -62,7 +70,7 @@ dmeltI <- dI %>%
   dcast(pidp + wave ~ variable)
 ```
 
-The next step in preparing our data was removing the values for each variable that represent, for example, values that show the respondent refused to answer the question, and changing these to ‘NA’ values:
+The next step in preparing our data was removing the values for each variable that represented, for example, respondents refusing to answer the question, and changing these to ‘NA’ values.
 
 ```{r NA, cache = TRUE, message = FALSE, warning = FALSE}
 dnaI <- dmeltI %>%
@@ -77,15 +85,13 @@ dnaI <- dmeltI %>%
   mutate(racelo = ifelse(racelo < 96, racelo, NA))
 ```
 
-Initially, our research aimed to include ethnicity as a factor in our analysis, a factor Grineski (2009) identifies as influencing wellbeing. However, when checking our dataset, we realised that both variables for ethnicity had vast numbers of ‘NA’ values in each wave, with the ethnicity of the participant coded inconsistently across the waves of the data. Due to the limitations of this assignment, we decided simply to remove this variable. This process is shown below:
+Initially, we aimed to include ethnicity in our analysis; a factor Grineski (2009) identifies as influencing wellbeing. However, the variables for ethnicity had vast numbers of ‘NA’ values in each wave, with the ethnicity of the participant coded inconsistently across the waves of the data. Due to the limitations of this assignment, we decided simply to remove this variable.
 
 ```{r race, cache = TRUE, message = FALSE, warning = FALSE}
 # Subsetting the data frame into individual waves
-W1 <- subset(dnaI, wave == 'a',
-             select = c(1:10))
+W1 <- subset(dnaI, wave == 'a', select = c(1:10))
 
-W7 <- subset(dnaI, wave == 'g',
-             select = c(1:10))
+W7 <- subset(dnaI, wave == 'g', select = c(1:10))
 
 # Checking for variables with larger than average number of NAs
 summary(W1)
@@ -97,7 +103,7 @@ dnaI <- subset(dnaI, , -c(racel, racelo, fimngrs))
 # We have also removed the 'gross monthly income' variable, as working with 'net monthly income' should allow a sufficiently clear look at income and wellbeing.
 ```
 
-The final step in preparing our data involved, firstly, recoding the answers given as numerical values to descriptive labels. We also combined equivalent qualifications, reducing the number of variables. These changes made our descriptive analyses both easier to carry out, and the results easier to interpret.
+The final step in preparing our data involved, firstly, recoding the answers coded as numerical values to descriptive labels. We also combined equivalent qualifications, thereby reducing the number of variables. These changes made our descriptive analyses easier to carry out and the results easier to interpret.
 
 ```{r clean, cache = TRUE, message = FALSE, warning = FALSE}
 dcleanI <- na.omit(dnaI) %>%
@@ -138,7 +144,7 @@ dcleanI <- na.omit(dnaI) %>%
   mutate(year = as.numeric(year))
 ```
 
-Secondly, we recorded our initial data to include the responses to wellbeing as numerical values, rather than the labels used above, in order to treat wellbeing as a continuous variable. This was so we could carry out longitudinal analysis of the effects of our variables on wellbeing.
+Secondly, we recorded the initial responses to wellbeing as numerical values, rather than the labels used above, in order to treat wellbeing as a continuous variable and carry out statistical analysis of the effects of our variables on it.
 
 ```{r cont, cache = TRUE, message = FALSE, warning = FALSE}
 dcontI <- na.omit(dnaI) %>%
@@ -171,7 +177,7 @@ dcontI <- na.omit(dnaI) %>%
   mutate(year = as.numeric(year))
 ```
 
-Finally, before visualising the relationships between our variables and wellbeing, we removed the data files we no longer needed, as they were needlessly taking up memory.
+Finally, before visualising the relationships between our variables and wellbeing, we removed the data files we no longer needed to save memory.
 
 ```{r rm, cache = TRUE, message = FALSE, warning = FALSE}
 rm(dI, dmeltI, dnaI)
@@ -179,9 +185,9 @@ rm(dI, dmeltI, dnaI)
 
 # Descriptive analysis
 
-### Distribution of wellbeing
+## Distribution of wellbeing
 
-First, we looked at the distribution of wellbeing across each wave of the data, trying to find any overall trends. We computed the mean average wellbeing score in each wave and visualised this, which showed us a noticeable drop in average wellbeing from 2010 to 2011, which (despite a small increase in 2012, perhaps due to the Olympics) stayed low until increasing again in 2014.
+First, we looked for any overall trends in the distribution of wellbeing across each wave of the data. We computed and visualised the mean average wellbeing score in each wave, which showed a noticeable drop in average wellbeing from 2010 to 2011, which (despite a small increase in 2012) remained relatively unchanged until increasing again in 2014 (*Figure 1*).
 
 ```{r wellbeing by year, cache = TRUE, message = FALSE, warning = FALSE}
 dcontI %>%
@@ -198,7 +204,7 @@ dcontI %>%
        y = "Mean Wellbeing")
 ```
 
-For a more detailed look at the trend in wellbeing over time, we looked at the proportion of responses for each level of wellbeing in each year of our data. The number of people both ‘mostly’ and ‘completely’ dissatisfied with their wellbeing decreased dramatically from 2010 to 2011, and a large reduction in the number ‘mostly satisfied’ with their wellbeing was also noticeable. While the number of people either ‘mostly’ or ‘completely’ dissatisfied with their wellbeing slowly decreased over this period, there was only a slight increase in 2012 of those ‘mostly satisfied’ with their wellbeing (again, perhaps due to the Olympics?), and the number ‘completely satisfied’ with their wellbeing continued to decrease. However, the number of people ‘mostly’ and ‘completely’ satisfied with their wellbeing almost returned to 2010 levels in 2014, and continued to improve in 2015, with those ‘mostly’ and ‘completely’ dissatisfied with their health seeing a similar drop.
+For a more detailed look at the trend in wellbeing over time, we looked at the proportion of responses for each level of wellbeing in each year of our data (*Figure 2*). The proportion of people both ‘mostly’ and ‘completely’ dissatisfied with their wellbeing increased dramatically from 2010 to 2011, whilst the proportion of people ‘mostly satisfied’ fell. Interestingly, over the years 2011-2013 (the period with the lowest mean wellbeing), though the proportion of people either ‘mostly’ or ‘completely’ dissatisfied with their wellbeing slowly decreased, so did the proportion ‘completely satisfied’ with their wellbeing. The proportion of people ‘mostly’ and ‘completely’ satisfied with their wellbeing increased 2014 and continued to rise in 2015, with those ‘mostly’ and ‘completely’ dissatisfied eventually returning to their 2009 proportion.
 
 ```{r wellbeing breakdown, cache = TRUE, message = FALSE, warning = FALSE}
 ggplot(dcleanI, aes(x = year, fill = sclfsat1)) +
@@ -211,7 +217,7 @@ ggplot(dcleanI, aes(x = year, fill = sclfsat1)) +
 # Note: This legend applies for all other charts with this colour scheme, unless otherwise stated. To make future charts easier to interpret, refer back to this legend.
 ```
 
-This second chart allows us a closer look at the differences in wellbeing across the first, fourth and final waves of the data.
+*Figure 3* allows us a closer look at the contrast in wellbeing across the first, fourth and final waves of the data (‘a’, ‘d’ and ‘g’ respectively).
 
 ```{r select few, cache = TRUE, message = FALSE, warning = FALSE}
 Wc <- subset(dcleanI, wave == c('a', 'd', 'g'), select = c(1:8))
@@ -220,14 +226,14 @@ ggplot(Wc, aes(x = wave, fill = sclfsat1)) +
   geom_bar(position = 'fill') +
   labs(title = "Figure 3",
        subtitle = "Proportion of Wellbeing responses in Waves 1, 4 & 7",
-       x = "Year",
+       x = "Wave",
        y = "Proportion of Wellbeing responses") +
   theme(legend.position = "none")
 ```
 
-### Differentiating by sex
+## Differentiating by sex
 
-In order to take a more detailed look at the distribution of wellbeing across society, we first differentiate our data by sex of the respondents. This will allow us to carry out our analysis while controlling for sex, which, as per our hypothesis, is expected to have an effect on wellbeing. First, we created a simple line graph, showing the mean average wellbeing score for each wave, shown below.
+In order to examine more closely the distribution of wellbeing across society, we first differentiated our data by sex. This allowed us to perform our statistical analysis while controlling for sex, which, as per our hypothesis, is expected to have an effect on wellbeing. First, we created a simple line graph, showing the mean average wellbeing score for each wave (*Figure 4*).
 
 ```{r sex time, cache = TRUE, message = FALSE, warning = FALSE}
 dcontI %>%
@@ -244,9 +250,9 @@ dcontI %>%
        y = "Mean Wellbeing")
 ```
 
-This shows a clear and consistent difference in wellbeing between the sexes, as per our hypothesis. Interestingly, however, average wellbeing for men is higher than for women, going against our hypothesis that men will have a lower average wellbeing than women.
+This shows a clear and consistent difference in wellbeing between the sexes, as per our hypothesis. Interestingly, however, average wellbeing for men is higher than for women (though only slightly), going against our hypothesis that men will have a lower average wellbeing than women.
 
-Next, for a quick overview of the differences between wellbeing of men and women over the entire dataset, we create a stacked bar-chart, split by sex. This shows that, overall, women are proportionally more likely to be ‘completely dissatisfied’ with their wellbeing than men, though have slightly higher levels of being ‘completely satisfied’ with their wellbeing than men.
+Next, for an overview of the differences between wellbeing of men and women over the entire dataset, we created a coxcomb-chart, split by sex (*Figure 5*). This shows that, overall, women are proportionally more likely to be ‘completely dissatisfied’ with their wellbeing than men, though have comparable levels of being ‘completely satisfied’.
 
 ```{r sex coxcomb, cache = TRUE, message = FALSE, warning = FALSE}
 ggplot(dcleanI, aes(x = sex, fill = sclfsat1)) +
@@ -259,39 +265,35 @@ ggplot(dcleanI, aes(x = sex, fill = sclfsat1)) +
   theme(legend.position = "none")
 ```
 
-To have a closer look at this difference, we compared the individual responses to wellbeing given by respondents over each wave. Using violin plots (below), we can see that for 2009 and 2010, the proportion of women who were ‘completely satisfied’ with their wellbeing is in fact higher than the proportion of men who said the same, despite the reverse being true for the categories ‘mostly’ and ‘somewhat’ satisfied. This is only true for these two years though, as following this, men had a higher proportion of responses in the positive categories for wellbeing. For each year, there was a higher proportion of women who were ‘completely dissatisfied’ with their wellbeing than men, though the overall proportion of people ‘completely dissatisfied’ than ‘completely satisfied’ was much lower, as indicated below.
+To closer examine this difference, we compared the individual responses to wellbeing given by respondents over each wave. *Figures 6* & *7* show that for 2009, 2010 and 2014, the proportion of women who were ‘completely satisfied’ with their wellbeing is higher than for men. However, the reverse is true in every positive category apart from these three. For each year, there was a higher proportion of women who were ‘completely’ and ‘mostly’ dissatisfied with their wellbeing than men.
 
 ```{r sex split, cache = TRUE, message = FALSE, warning = FALSE}
-fe <- subset(dcontI, sex == 'female')
+fe1 <- subset(dcleanI, sex == 'female')
 
-m <- subset(dcontI, sex == 'male')
+m1 <- subset(dcleanI, sex == 'male')
 
-ggplot(fe, aes(x = wave, y = sclfsat1, fill = wave)) +
-  geom_violin() +
+ggplot(fe1, aes(x = year, fill = sclfsat1)) +
+  geom_bar(position = 'fill') +
   labs(title = "Figure 6",
        subtitle = "Proportion of Wellbeing responses for Women",
-       x = "Wave",
-       y = "Proportion of Wellbeing responses")
+       x = "Year",
+       y = "Proportion of Wellbeing responses") +
+  theme(legend.position = "none")
 
-ggplot(m, aes(x = wave, y = sclfsat1, fill = wave)) +
-  geom_violin() +
+ggplot(m1, aes(x = year, fill = sclfsat1)) +
+  geom_bar(position = 'fill') +
   labs(title = "Figure 7",
        subtitle = "Proportion of Wellbeing responses for Men",
-       x = "Wave",
-       y = "Proportion of Wellbeing responses")
-
-table(fe$sclfsat1, fe$wave)
-
-table(m$sclfsat1, m$wave)
-
-# Note: while this is not a table of proportion, the ratio between values is clear to see, and the overall table is easier to interpret than one showing proportion.
+       x = "Year",
+       y = "Proportion of Wellbeing responses") +
+  theme(legend.position = "none")
 ```
 
-Another useful insight these graphs give us is an idea of how wellbeing has changed for men and women over time, especially in relation to one another. Returning to our line-graph, we can see that while the overall trend is similar (a dip in wellbeing over 2011-2013), the difference in mean wellbeing between men and women is relatively stable. This difference is analysed in further detail later on.
+Another useful insight from this analysis is how wellbeing has changed for men and women over time, in relation to one another. Returning to *Figure 4*, we can see that while the overall trend is similar (a dip in wellbeing over 2011-2013), the difference in mean wellbeing between men and women is not constant. Whether this difference is statistically significant is analysed below.
 
-### Differentiating by education
+## Differentiating by education
 
-The next step in our analysis of the distribution of wellbeing across society was to differentiate our data by education. As in our analysis of sex and wellbeing, we first made a simple line graph showing the mean average wellbeing score for each wave, segregated by level of education.
+We continued our analysis by differentiating wellbeing by education. As  in our analysis of sex and wellbeing, we first made a simple line graph showing the mean average wellbeing score for each wave, segregated by level of education (*Figure 8*).
 
 ```{r edu, cache = TRUE, message = FALSE, warning = FALSE}
 dcontI %>%
@@ -308,9 +310,9 @@ dcontI %>%
        y = "Mean Wellbeing")
 ```
 
-This shows some clear differences between levels of education and wellbeing, though not entirely as we predicted. A- and AS-levels appear to be interchangeable when evaluating their effect on wellbeing, although in 2013 those with AS-levels had, proportionally, an unusually high wellbeing mean average (even higher than those with a degree or equivalent). Further, those with AS-Levels were the only group whose wellbeing did not increase from 2011 to 2012. Interestingly, respondents with higher education, such as a 'teaching qualification (excluding pgce)', have similar scores of wellbeing as those with just GCSE/equivalent qualifications; noticeably lower than those with AS- or A-levels, or university degrees. Finally, those with ‘Other school certificates’ have a higher mean average than those with ‘CSE’s, with the exception of 2015.
+This shows some clear differences between levels of education and wellbeing, though not entirely as predicted. A- and AS-levels appear to be interchangeable when evaluating their effect on wellbeing, although in 2013 those with AS-levels had, proportionally, an unusually high mean average wellbeing (even higher than those with a degree or equivalent). Further, those with AS-levels were the only group whose wellbeing did not increase from 2011 to 2012. Interestingly, respondents with higher education (e.g. 'teaching qualification (excluding PGCE)’) have similar scores of wellbeing as those with just GCSE/equivalent qualifications; noticeably lower than those with AS- or A-levels, or university degrees. Finally, those with ‘Other school certificates’ have a higher mean average than those with ‘CSEs', with the exception of 2015.
 
-For a closer overall look between education levels, we created a stacked bar-chart showing the overall proportions for each education level for wellbeing in each wave. Interestingly, this shows that respondents with AS- and A-levels are more likely to be ‘completely satisfied’ with their wellbeing than those with university degrees or higher, a finding that was not picked up in the previous chart. For a clearer comparison, we added a coxcomb chart comparing respondents with higher degrees, A-levels, and CSEs.
+For a more detailed examination, we created a stacked bar-chart showing the overall proportions of wellbeing for each education level (*Figure 9*). Interestingly, this shows that respondents with AS- and A-levels are more likely to be ‘completely satisfied’ with their wellbeing than those with university degrees or higher, a finding that was not picked up in the previous chart. For a clearer comparison, we added a coxcomb chart comparing respondents with higher degrees, A-levels, and CSEs (*Figure 10*).
 
 ```{r edu breakdown, cache = TRUE, message = FALSE, warning = FALSE}
 ggplot(dcleanI, aes(x = qfhigh, fill = sclfsat1)) +
@@ -335,44 +337,41 @@ ggplot(Wd, aes(x = qfhigh, fill = sclfsat1)) +
   theme(legend.position = "none")
 ```
 
-While this analysis is more detailed than our initial line-graph, we were able to develop this further by analysing these three qualification levels by each wave of data. This shows us that during the overall slump in wellbeing from 2011-2013, the proportion of those who were ‘completely’ and ‘mostly’ dissatisfied with their wellbeing increased the most in respondents with the highest education levels. However, the inverse is not true for those ‘completely’ and ‘mostly’ satisfied with their wellbeing, as it is those with A-levels, not with higher degrees who were least effected; in fact, the proportion of those with A-levels who were ‘completely satisfied’ with their wellbeing actually increased from 2010-2011.
+While this analysis is more detailed than our initial line-graph, we were able to develop this further by analysing these three qualification levels by each wave of data. *Figures 11*, *12*, and *13* show us that during the overall slump in wellbeing from 2011-2013, the proportion of those who were ‘completely’ and ‘mostly’ dissatisfied with their wellbeing increased the most in respondents with the highest education levels. However, for those ‘completely’ and ‘mostly’ satisfied with their wellbeing, it is those with A-levels, not with higher degrees who were least affected; in fact, the proportion of those with A-levels who were ‘completely satisfied’ with their wellbeing actually increased from 2010-2011.
 
 ```{r edu few, cache = TRUE, message = FALSE, warning = FALSE}
-High <- subset(dcleanI, qfhigh == '1-Higher degree',
-               select = c(wave, sclfsat1))
+High <- subset(dcleanI, qfhigh == '1-Higher degree', select = c(year, sclfsat1))
 
-A.l <- subset(dcleanI, qfhigh == '4-A level/equiv',
-            select = c(wave, sclfsat1))
+A.l <- subset(dcleanI, qfhigh == '4-A level/equiv', select = c(year, sclfsat1))
 
-CSE <- subset(dcleanI, qfhigh == '7-CSE',
-              select = c(wave, sclfsat1))
+CSE <- subset(dcleanI, qfhigh == '7-CSE', select = c(year, sclfsat1))
 
-ggplot(High, aes(x = wave, fill = sclfsat1)) +
+ggplot(High, aes(x = year, fill = sclfsat1)) +
   geom_bar(position = 'fill') +
   labs(title = "Figure 11",
        subtitle = "Proportion of Wellbeing responses for 'Higher degrees'",
-       x = "Wave",
+       x = "Year",
        y = "Proportion of Wellbeing responses") +
   theme(legend.position = "none")
 
-ggplot(A.l, aes(x = wave, fill = sclfsat1)) +
+ggplot(A.l, aes(x = year, fill = sclfsat1)) +
   geom_bar(position = 'fill') +
   labs(title = "Figure 12",
        subtitle = "Proportion of Wellbeing responses for 'A-Levels'",
-       x = "Wave",
+       x = "Year",
        y = "Proportion of Wellbeing responses") +
   theme(legend.position = "none")
 
-ggplot(CSE, aes(x = wave, fill = sclfsat1)) +
+ggplot(CSE, aes(x = year, fill = sclfsat1)) +
   geom_bar(position = 'fill') +
   labs(title = "Figure 13",
        subtitle = "Proportion of Wellbeing responses for 'CSEs'",
-       x = "Wave",
+       x = "Year",
        y = "Proportion of Wellbeing responses") +
   theme(legend.position = "none")
 ```
 
-Following our analysis of the split between the sexes and wellbeing, it would be remiss not to compare this divide in wellbeing when analysing education. This analysis shows that the split between the sexes is exaggerated by certain education levels. Those who are least well educated (CSEs) have substantially higher levels of wellbeing for men than for women, and men with GCSEs have similar levels of wellbeing to those with A-levels and higher education, whereas for women those with GCSEs and higher education have substantially lower levels of wellbeing than those with A- and AS- levels. Interestingly, men with AS-levels and higher university degrees have the highest levels of wellbeing in men, where women with higher university degrees and university degrees have the highest levels of wellbeing in women. The only qualification where women score higher on wellbeing than men is university degrees.
+Following our analysis of the split between the sexes and wellbeing, it would be remiss not to include sex when analysing education. *Figure 14* shows that the split between the sexes is exaggerated by certain education levels. Those who are least well educated (CSEs) have substantially higher levels of wellbeing for men than for women. Men with GCSEs, A-levels and higher education report similar levels of wellbeing, whereas women with GCSEs and higher education have substantially lower levels of wellbeing than those with A-levels. Interestingly, men with AS-levels and higher university degrees have the highest levels of wellbeing in men, whereas women with higher university degrees and university degrees have the highest levels of wellbeing in women. The only qualification where women score higher on wellbeing than men is university degrees.
 
 ```{r edu sex, cache = TRUE, message = FALSE, warning = FALSE}
 dcontI %>%
@@ -389,9 +388,9 @@ dcontI %>%
        y = "Mean Wellbeing")
 ```
 
-### Differentiating by income
+## Differentiating by income
 
-The final part of our descriptive analysis brought us on to the topic of income. As we used the variable for net monthly income, we decided to recode this into quantiles at every 20% of income, to make our descriptive analysis easier both to do, and to interpret.
+The final part of our descriptive analysis brought us on to the topic of income. We recoded net monthly income into quintiles to make our descriptive analysis easier to do and to interpret.
 
 ```{r income code, cache = TRUE, message = FALSE, warning = FALSE}
 quantile(dcleanI$fimnnet, seq(0, 1, 0.2))
@@ -405,7 +404,7 @@ sc <- dcleanI %>%
   mutate(income = as.factor(income))
 ```
 
-Our first graph is an overview of the dataset when segregating respondents by income. Incredibly, the group who are proportionately most likely to be ‘completely satisfied’ with their wellbeing are the bottom 20% of earners. This graph also shows that this group also have the lowest rates of dissatisfaction with wellbeing, and by looking at a table of this data for a more precise look, we can see the bottom 20% of earners are the third least likely to be ‘completely dissatisfied’, second least likely to be ‘mostly dissatisfied’ and least likely to be ‘somewhat dissatisfied’ in terms of wellbeing. This, coupled with the fact that the 4 other income brackets have almost identical proportions of respondents who were ‘completely satisfied’ with their wellbeing, is entirely contrary to our hypothesis that income is positively correlated with wellbeing.
+*Figure 15* is an overview of the dataset when segregating respondents by income. Incredibly, the group who are proportionally most likely to be ‘completely satisfied’ with their wellbeing are the bottom 20% of earners. More precisely, tabulating the raw numbers shows that the bottom 20% of earners are the third least likely to be ‘completely dissatisfied’, second least likely to be ‘mostly dissatisfied’ and least likely to be ‘somewhat dissatisfied’ in terms of wellbeing. These factors, coupled with the fact that the 4 other income brackets have almost identical proportions of respondents who were ‘completely satisfied’ with their wellbeing, is entirely contrary to our hypothesis that income is positively correlated with wellbeing.
 
 ```{r income overview, cache = TRUE, message = FALSE, warning = FALSE}
 ggplot(sc, aes(x = income, fill = sclfsat1)) +
@@ -419,9 +418,11 @@ ggplot(sc, aes(x = income, fill = sclfsat1)) +
 table(sc$sclfsat1, sc$income)
 ```
 
-Our first line-graph shows almost exactly what we hypothesised: as income decreases, so does the mean average wellbeing. However, there is one very substantial exception to this rule. Those in the bottom fifth of earners have exceptionally high mean average wellbeing levels, not far from the top fifth of earners. This is a very surprising result, however could be quite easy to explain. Notably, net monthly income can be negative. As this variable is purely personal income, it does not take into account other earners in the household. This could mean that the household net income is in fact in the top 20%, yet this is earnt by only one person in the household, meaning other family members benefit from this secondary wealth. To try to counter this possible effect, we then removed individuals who had a negative net income, as we theorised that those on low-salaries would not spend far outside their means, unlike those with a spouse or parent on a high income salary.
+To evaluate this further, we created a line-graph of income and wellbeing. *Figure 16* shows almost exactly what we hypothesised: as income decreases, so does the mean average wellbeing. However, there is one substantial exception to this rule. Those in the bottom fifth of earners have exceptionally high mean average wellbeing levels, not far from the top fifth of earners. This very surprising result could, however, be quite easy to explain; net monthly income can be negative. As this variable is purely personal income, it does not take into account other earners in the household. The household net income may be in the top 20%, yet earnt by only one person in the household, meaning other family members benefit from this secondary wealth. To try to counter this possible effect, we removed individuals who had a negative net income, as we hypothesised that those on low-salaries would not spend far outside their means, unlike those with a spouse or parent on a high-income salary (*Figure 17*).
 
 ```{r income t & s, cache = TRUE, message = FALSE, warning = FALSE}
+# We first had to recode the data into quintiles using our data with wellbeing coded as a continuous variable.
+
 quantile(dcontI$fimnnet, seq(0, 1, 0.2))
 
 t <- dcontI %>% 
@@ -465,16 +466,15 @@ s %>%
   geom_point() +
   geom_line() +
   labs(title = "Figure 17",
-       subtitle = "Mean Wellbeing split by Income (of over 0)",
+       subtitle = "Mean Wellbeing split by Income (of over £0p/m)",
        x = "Year",
        y = "Mean Wellbeing")
 ```
 
-This change in coding made had a substantial effect on the outcome, although the bottom fifth of earners still represent an outlier in mean average wellbeing. Interestingly, this group seemed to be least effected by the general slump in average wellbeing from 2011-2013, going from second bottom to second top (in mean average wellbeing) over this period. One possible explanation for the bottom fifth still being an outlier is retirees, whose net monthly income may not be very high, but whose savings may help them spend well. We correct for this by sub-setting our data to only include those under 65 (the retirement age in the UK), though this has very little difference overall, suggesting other factors are influential in this outlier.
+This change in coding had a substantial effect, and although the bottom fifth of earners still represent an outlier in mean average wellbeing, they are now closer to the second fifth of earners than the top fifth. Interestingly, they seemed to be least affected by the general slump in average wellbeing, going from second bottom to second top (in mean average wellbeing) from 2010 to 2013. One possible explanation for the bottom fifth still being an outlier is retirees, as though they may have relatively low-income, they are more likely to have savings available to spend. We correct for this by sub-setting our data to only include those under 65 (the retirement age in the UK). However, *Figure 18* shows that this has very little difference overall, suggesting other factors are present.
 
 ```{r income y1, cache = TRUE, message = FALSE, warning = FALSE}
-y1 <- subset(s, dvage < 65,
-           select = c(1:9))
+y1 <- subset(s, dvage < 65, select = c(1:9))
 
 table(y1$dvage)
 
@@ -487,12 +487,12 @@ y1 %>%
   geom_point() +
   geom_line() +
   labs(title = "Figure 18",
-       subtitle = "Mean Wellbeing split by Income (of over 0, excluding pensioners)",
+       subtitle = "Mean Wellbeing split by Income (of over £0p/m, excluding pensioners)",
        x = "Year",
        y = "Mean Wellbeing")
 ```
 
-The final part of our descriptive analysis involves splitting this final graph by sex, given the notable difference it made in wellbeing generally. Indeed, by segregating between sexes, this graph shows some remarkable trends. Much like for education, there is only one level of income that women have a higher mean average wellbeing than men, in this case the second fifth of respondents. For every other level of income, men have a higher mean average wellbeing each year, almost without exception. Arguably just as notably is the mean average wellbeing for the bottom fifth of earners when split by sex. For men, this group’s wellbeing hovers around the same level as those in the second highest bracket of earners, and nearly matches those in the top bracket of earners in the most recent wave of survey data. For women, the bottom 20% of earners are either similar to the lowest mean average level for wellbeing, or indeed score lowest. Furthermore, the difference between the male and female levels for wellbeing are most different in this category overall, by some distance, with only the sex divide in wellbeing for the top 20% of earners being comparable, in 2013.
+The final part of our descriptive analysis involves dividing income levels by sex, given the notable difference it made in wellbeing generally. Indeed, by segregating between sexes, *Figure 19* uncovers some remarkable trends. Similar to education, there is only one level of income at which women have a higher mean average wellbeing than men, in this case the second fifth of earners. For every other level of income, men have a higher mean average wellbeing each year, almost without exception. Just as noteworthy is the mean average wellbeing for the bottom fifth of earners when split by sex. For men, this group’s wellbeing hovers around the same level as those in the second highest bracket of earners, and nearly matches those in the top bracket of earners in the most recent wave of survey data. For women, the bottom 20% of earners report either the lowest, or close to the lowest, mean average wellbeing. Furthermore, this category has the greatest difference between male and female levels for wellbeing, with 2014 being the only notable exception.
 
 ```{r income y1 sex, cache = TRUE, message = FALSE, warning = FALSE}
 y1 %>%
@@ -500,16 +500,16 @@ y1 %>%
   summarise(
     meanWb = mean(sclfsat1)
   ) %>%
-  ggplot(aes(x = year, y = meanWb, colour = income, linetype = sex)) +
+  ggplot(aes(x = year, y = meanWb, colour = income, linetype = sex, shape = sex)) +
   geom_point() +
   geom_line() +
   labs(title = "Figure 19",
-       subtitle = "Mean Wellbeing split by Income (of over 0, excluding pensioners) and Sex",
+       subtitle = "Mean Wellbeing split by Income (of over £0p/m, excluding pensioners) and Sex",
        x = "Year",
        y = "Mean Wellbeing")
 ```
 
-Unfortunately, visualising the differences in wellbeing between respondents with different levels of income, education, and of different sexes is impractical, and this comparison will be left for statistical analysis (shown below is the graph split by each of these three factors. Aside from a couple of notable outliers, it is almost entirely uninterpretable).
+Unfortunately, visualising the differences in wellbeing between respondents with different levels of income, education, and of different sexes is impractical, and this comparison will be left for statistical analysis (*Figure 20* is the graph split by each of these three factors. Aside from a couple of notable outliers, it is almost entirely uninterpretable).
 
 ```{r y1 all, cache = TRUE, message = FALSE, warning = FALSE}
 y1 %>%
@@ -521,7 +521,7 @@ y1 %>%
   geom_point() +
   geom_line() +
   labs(title = "Figure 20",
-       subtitle = "Mean Wellbeing split by Income (of over 0, excluding pensioners), Sex and Ediucation",
+       subtitle = "Mean Wellbeing split by Income (of over £0p/m, excluding pensioners), Sex and Education",
        x = "Year",
        y = "Mean Wellbeing")
 ```
@@ -530,233 +530,249 @@ y1 %>%
 
 ## Analysing the most recent wave of data
 
-Having taken a preliminary look into our dataset, and visualised some of the relationships of interest, we move on to evaluating whether any of these relationships are statistically significant. First, we calculated whether there was a significant relationship between the age of respondents and their wellbeing (using the most recent wave of data).
+Having taken a preliminary look into our dataset, and visualised some of the relationships of interest, we move on to evaluating whether any of these relationships are statistically significant. First, we compared the relationship between income and wellbeing for 2015, using a linear model to see if the relationship was statistically significant. We then visualised this relationship.
 
-```{r age lm, cache = TRUE, message = FALSE, warning = FALSE}
+```{r income lm & graph, cache = TRUE, message = FALSE, warning = FALSE}
+# Subsetting our data to just the final wave (2015).
+
 W7 <- subset(dcontI, wave == 'g', select = c(1:8))
 
-age <- lm(sclfsat1 ~ dvage, W7)
+Model.1 <- lm(sclfsat1 ~ fimnnet, W7)
 
-summary(age)
+summary(Model.1)
+
+W7 %>%
+  ggplot(aes(x = fimnnet, y = sclfsat1)) +
+  geom_smooth() +
+  geom_smooth(method = "lm", colour = "red", se = FALSE) +
+  labs(title = "Figure 21",
+       subtitle = "Trend in Wellbeing by Income",
+       x = "Net Monthly Income",
+       y = "Wellbeing")
 ```
 
-This shows that, in our sample, the older the respondent, generally the lower score they gave for their wellbeing. This is statistically significant at the 99% confidence level (p < 0.01). The following graph gives a visual representation of this relationship.
+*Model 1* shows a statistically significant relationship (at the 99% confidence level, p<0.01) between income and wellbeing, though *Figure 21* shows that a linear model may not be best suited to capturing this relationship. As indicated in our descriptive analysis, the relationship between income and wellbeing is less clear for respondents with low, or negative, monthly income, for whom there seem to be a number of confounding factors. In fact, *Figure 22* shows a linear model is more suitable when excluding respondents who earn under £800 a month, equating to £9,600 a year. *Model 2* shows that following this change, the effect of income on wellbeing almost doubles (from 3.951e-05 to 7.256e-05 per pound). Interestingly, this is roughly the amount an individual on minimum wage, working a 40-hour week for 45 weeks (taking into account bank-holidays and standard holiday allowance) will earn after tax (shown below). It seems, therefore, that when in full time employment, wellbeing increases with income (until about £8,000 a month).
+
+```{r minimum income, cache = TRUE, message = FALSE, warning = FALSE}
+W7r1 <- subset(W7, !(fimnnet < 800), select = c(1:8))
+
+W7r1 %>%
+  ggplot(aes(x = fimnnet, y = sclfsat1)) +
+  geom_smooth() +
+  geom_smooth(method = "lm", colour = "red", se = FALSE) +
+  labs(title = "Figure 22",
+       subtitle = "Trend in Wellbeing by Income (above £800)",
+       x = "Net Monthly Income",
+       y = "Wellbeing")
+
+Model.2 <- lm(sclfsat1 ~ fimnnet, W7r1)
+summary(Model.2)
+
+6.7*40*45*.8
+
+# Calculated using the minimum wage for over-21s (https://www.gov.uk/national-minimum-wage-rates) for 2015 (the final year in which survey data was taken), subtracting holiday time (https://www.gov.uk/bank-holidays and https://www.gov.uk/holiday-entitlement-rights), after tax (https://www.gov.uk/income-tax-rates/previous-tax-years).
+```
+
+Next, we examined the relationship between education and wellbeing. *Model 3* showed that, contrary to our hypothesis, when compared to respondents with higher degrees, those with AS-levels did not have a statistically significant different wellbeing (at the 95% confidence level, p>0.05). However, the differences in wellbeing between respondents with higher degrees and all other qualifications *were* statistically significant (at the 99% confidence level, p<0.01). Interestingly, the effect on wellbeing for respondents who had gone through higher education (e.g. a teaching qualification but not a PGCE) and those with GCSEs was similar (-0.24682 and -0.22977 respectively), though the effect of A-levels was smaller (only -0.10773). The largest effects came from respondents with CSEs and ‘Other school certificates’ (-0.41846 and -0.52835 respectively). The wellbeing scores for these education levels are included in *Figure 23*.
+
+```{r education, cache = TRUE, message = FALSE, warning = FALSE}
+Model.3 <- lm(sclfsat1 ~ factor(qfhigh), W7)
+
+summary(Model.3)
+
+W7 %>%
+  ggplot(aes(x = qfhigh, y = sclfsat1, fill = qfhigh)) +
+  geom_bar(stat = "summary", fun.y = "mean") +
+  labs(title = "Figure 23",
+       subtitle = "Wellbeing by Education",
+       x = "Education",
+       y = "Wellbeing") +
+  theme(legend.position = "none")
+```
+
+Penultimately, we evaluated the relationship between wellbeing and sex. As our descriptive analysis suggests, men have a higher wellbeing score than women. *Model 4* allows us to see that the difference between the two is statistically significant at the 99% confidence interval (p<0.01). However, though significant, the magnitude of this effect is fairly small (0.10) and is visualised in *Figure 24*.
+
+```{r sex model & graph, cache = TRUE, message = FALSE, warning = FALSE}
+Model.4 <- lm(sclfsat1 ~ factor(sex), W7)
+
+summary(Model.4)
+
+W7 %>%
+  ggplot(aes(x = sex, y = sclfsat1, fill = sex)) +
+  geom_bar(stat = "summary", fun.y = "mean") +
+  labs(title = "Figure 24",
+       subtitle = "Wellbeing by Sex",
+       x = "Sex",
+       y = "Wellbeing")
+```
+
+Finally, before creating a model that controls for all our variables, we calculated whether there was a significant relationship between the age of respondents and their wellbeing, having removed those over 64 from our descriptive analysis of income.
+
+```{r age lm, cache = TRUE, message = FALSE, warning = FALSE}
+Model.5 <- lm(sclfsat1 ~ dvage, W7)
+
+summary(Model.5)
+```
+
+*Model 5* shows that, in our sample, the older the respondent, the lower reported wellbeing. This is statistically significant at the 99% confidence level (p<0.01). *Figure 25* gives a visual representation of this relationship.
 
 ```{r age graph, cache = TRUE, message = FALSE, warning = FALSE}
 W7 %>%
   ggplot(aes(x = dvage, y = sclfsat1)) +
   geom_smooth() +
   geom_smooth(method = "lm", colour = "red", se = FALSE) +
-  labs(title = "Figure 21",
+  labs(title = "Figure 25",
        subtitle = "Trend in Wellbeing by Age",
        x = "Age",
        y = "Wellbeing")
 ```
 
-This graph shows that a linear model seems to fit the relationship between age and wellbeing quite well to an extent; the linear model fits less well at what looks to roughly be the age of retirement. Therefore, we run our model, and the visualisation of this, again, taking account of this observation.
+This shows that a linear model seems to fit the relationship between age and wellbeing quite well, until (roughly) the age of retirement. Consequently, we ran our model, and the visualisation, again, removing those over 64.
 
 ```{r pen lm & graph, cache = TRUE, message = FALSE, warning = FALSE}
 W7p <- subset(W7, dvage < 65, select = c(1:8))
 
-agepen <- lm(sclfsat1 ~ dvage, W7p)
+Model.6 <- lm(sclfsat1 ~ dvage, W7p)
 
-summary(agepen)
+summary(Model.6)
 
 W7p %>%
   ggplot(aes(x = dvage, y = sclfsat1)) +
   geom_smooth() +
   geom_smooth(method = "lm", colour = "red", se = FALSE) +
-  labs(title = "Figure 22",
+  labs(title = "Figure 26",
        subtitle = "Trend in Wellbeing by Age (excluding pensioners)",
        x = "Age",
        y = "Wellbeing")
 ```
 
-This model shows again, the relationship between age and wellbeing is statistically significant at the 99% confidence level (p < 0.01), and that the difference between people of different ages is slightly larger (wellbeing smaller by 0.011 compared to 0.009 for each year between respondents). The graph fits a linear model better than our last attempt, though not perfectly. Interestingly, the graph shows a slight uptick in wellbeing in the couple of years before the age of retirement, which, returning to our previous graph, continues for a few years afterwards then drops again. Whether this relationship remains statistically significant when controlling for the other variables we are analysing will be considered later.
+*Model 6* shows again that the relationship between age and wellbeing is statistically significant at the 99% confidence level (p<0.01). The effect of age on wellbeing is slightly larger than in *Model 5* (wellbeing decreases by 0.012 compared to 0.009 (4 S.F.) for each year older respondents are). *Figure 26* fits a linear model better than our last attempt. Interestingly, however, the graph shows a slight uptick in wellbeing just before the age of retirement, which, returning to *Figure 25*, continues for a few years before decreasing.
 
-Next, we compared the relationship between income and wellbeing. Again, using data from the most recent wave, we used a linear model to see if the relationship between income and wellbeing was statistically significant (at the 99% confidence level, p < 0.01). We then visualised this relationship.
-
-```{r income lm & graph, cache = TRUE, message = FALSE, warning = FALSE}
-income <- lm(sclfsat1 ~ fimnnet, W7)
-
-summary(income)
-
-W7 %>%
-  ggplot(aes(x = fimnnet, y = sclfsat1)) +
-  geom_smooth() +
-  geom_smooth(method = "lm", colour = "red", se = FALSE) +
-  labs(title = "Figure 23",
-       subtitle = "Trend in Wellbeing by Income",
-       x = "Net Monthly Income",
-       y = "Wellbeing")
-```
-
-Our model shows there is a statistically significant relationship (at the 99% confidence level, p < 0.01) between income and wellbeing, though our visualisation of this relationship shows that our model may not be best suited to capturing this relationship. Indeed, as indicated in our descriptive analysis previously, the relationship between income and wellbeing is less clear for respondents with low, or negative, monthly income. In fact, our next graph shows this relationship become far clearer (and indeed, as our new model shows, has a larger effect (7.256e-05 compared to 3.951e-05)) for respondents who earn over £800 a month, equating to £9,600 a year. Interestingly, this is roughly the amount an individual on minimum wage, working a 40-hour week for 45 weeks (taking into account bank-holidays and standard holiday allowance) will earn after tax (shown below). It seems, therefore, that when in full time employment, wellbeing increases with income (until about £8,000 a month at which point the effect tails off), though for individuals earning less than this there are a number of other confounding factors.
-
-```{r minimum income, cache = TRUE, message = FALSE, warning = FALSE}
-W7r1 <- subset(W7, fimnnet > 800,
-              select = c(1:8))
-
-W7r1 %>%
-  ggplot(aes(x = fimnnet, y = sclfsat1)) +
-  geom_smooth() +
-  geom_smooth(method = "lm", colour = "red", se = FALSE) +
-  labs(title = "Figure 24",
-       subtitle = "Trend in Wellbeing by Income (above £800)",
-       x = "Net Monthly Income",
-       y = "Wellbeing")
-
-incomer1 <- lm(sclfsat1 ~ fimnnet, W7r1)
-summary(incomer1)
-
-6.7*40*45*.8
-
-# Calculated using the minimum wage for over-21s (https://www.gov.uk/national-minimum-wage-rates) for 2015 (the final full working year before survey data was taken throughout 2016), subtracting holiday time (https://www.gov.uk/bank-holidays and https://www.gov.uk/holiday-entitlement-rights), after tax (https://www.gov.uk/income-tax-rates/previous-tax-years).
-```
-
-The penultimate relationship we will look at, before creating a model that controls for all our variables, is that between education and wellbeing. Our model showed that, compared to respondents with higher degrees, the difference in wellbeing with those with degrees and, strangely, AS-levels were not statistically significant (at the 95% confidence level, p > 0.05). However, the differences in wellbeing between respondents with higher degrees and all other qualifications *were* statistically significant (at the 99% confidence level, p < 0.01). Interestingly, the magnitude of the effect of respondents who had gone through higher education (e.g. a teaching qualification but not a pgce) and those with GCSEs was similar (-0.24682 and -0.22977 respectively), alongside a smaller magnitude of effect for respondents with A-levels (only -0.10773). The largest effect magnitudes came from respondents with CSEs and ‘Other school certificates’, with effect magnitudes of -0.41846 and -0.52835 respectively. The wellbeing scores for these education levels are included in the following graph.
-
-```{r education, cache = TRUE, message = FALSE, warning = FALSE}
-edu <- lm(sclfsat1 ~ factor(qfhigh), W7)
-
-summary(edu)
-
-W7 %>%
-  ggplot(aes(x = qfhigh, y = sclfsat1, fill = qfhigh)) +
-  geom_bar(stat = "summary", fun.y = "mean") +
-  labs(title = "Figure 25",
-       subtitle = "Wellbeing by Education",
-       x = "Education",
-       y = "Wellbeing")
-```
-
-Finally, we evaluated the relationship between wellbeing and sex. As our descriptive analysis suggests, men have a higher wellbeing score than women. Our models allows us to see that the difference between the two is statistically significant at the 99.9% confidence interval (p < 0.001), and the difference is shown in the below graph. However, though significant, the magnitude of this effect is fairly small (0.10).
-
-```{r sex model & graph, cache = TRUE, message = FALSE, warning = FALSE}
-sex <- lm(sclfsat1 ~ factor(sex), W7)
-
-summary(sex)
-
-W7 %>%
-  ggplot(aes(x = sex, y = sclfsat1, fill = sex)) +
-  geom_bar(stat = "summary", fun.y = "mean") +
-  labs(title = "Figure 26",
-       subtitle = "Wellbeing by Sex",
-       x = "Sex",
-       y = "Wellbeing")
-```
-
-Having evaluated the significance of our variables with wellbeing separately, we then create a linear model where we control for each of the variables, to see if this significance holds. We see that the significance of age, income, and sex are unchanged (all significant at the 99% confidence level, p < 0.01), with largely similar magnitudes of effect as well. Interestingly, the difference between those who have higher degrees and those with AS-levels is now statistically significant at the 95% confidence level (p < 0.05), and has a similar magnitude of effect as those with A-levels. Additionally, the magnitude of the effect of those respondents with higher education (e.g. a teaching qualification but not a pgce) has decreased, meaning there is now a noticeable difference between them and those with GCSEs. Finally, the magnitude of the effect on wellbeing of respondents with CSEs and ‘Other school certificates’ has decreased to -0.3001 from -0.4185 and to -0.3154 from -0.5284 respectively.
+Having evaluated whether our individual variables had a statistically significant effect on wellbeing, we created a linear model where we controlled for each variable. *Model 7* shows that the significance of age, income, and sex are unchanged (all significant at the 99% confidence level, p<0.01), with largely similar effects. Interestingly, the difference between those who have higher degrees and those with AS-levels is now statistically significant at the 95% confidence level (p<0.05). AS-levels have a similar effect on wellbeing as A-levels. Additionally, the effect on wellbeing of higher education (e.g. ‘teaching qualification but not a PGCE’) has decreased, meaning there is now a noticeable difference between the effect of higher education and GCSEs. Finally, the effect of CSEs and ‘Other school certificates’ on wellbeing has decreased from -0.4185 to -0.3001 and from -0.5284 to -0.3154 respectively.
 
 ```{r all model, cache = TRUE, message = FALSE, warning = FALSE}
-all <- lm(sclfsat1 ~ dvage + fimnnet + factor(qfhigh) + factor(sex), W7)
+Model.7 <- lm(sclfsat1 ~ dvage + fimnnet + factor(qfhigh) + factor(sex), W7)
 
-summary(all)
+summary(Model.7)
 
-# Note: these changes in education are for when all other variables are constant, and represent the differences between respondents in our survey data. This does not mean that if a respondent gained a new qualification their wellbeing would necessarily rise, rather these are the differences between respondents observed in our survey data.
+# Note: these changes are for when all other variables are held constant, and represent the differences between respondents observed in our survey data. This does not, therefore, mean that if a respondent gained a new qualification, for example, their wellbeing would necessarily rise.
 ```
 
 ## Longitudinal analysis
 
-So far, our analysis has focused on the most recent wave of data. However, we can evaluate whether the changes in wellbeing from year-to-year are statistically significant in each of our variables. First, we are able to see if the overall changes in wellbeing from year-to-year are statistically significant.
+So far, our analysis has focused on the most recent wave of data. However, here we first evaluate whether the overall changes in wellbeing are statistically significant *from year-to-year*, before doing this for each individual variable.
 
 ```{r wellbeing long, cache = TRUE, message = FALSE, warning = FALSE}
-welllong <- lm(sclfsat1 ~ factor(year), d = dcontI)
+Model.8 <- lm(sclfsat1 ~ factor(year), d = dcontI)
 
-summary(welllong)
+summary(Model.8)
 ```
 
-Our results show that each year is statistically different at least at the 95% confidence level (p < 0.05), and that the magnitude of this effect varies, though is fairly small in 2010 and 2015.
+*Model 8* shows the difference in wellbeing from year-to-year, in comparison with 2009, is statistically significant at the 95% confidence level (p<0.05), and that the magnitude of this effect varies, though is fairly small in 2010 and 2015.
 
-From our descriptive analysis section (Figure 4) we can see that the wellbeing for men and women seems to follow the same pattern, with no real change in the wellbeing between the sexes. To do this, we use interaction effects between year and sex in a linear regression model.
+From our descriptive analysis section we can see that the wellbeing for men and women seems to follow the same pattern *Figure 4*, with no real change in the difference in wellbeing between the sexes. To evaluate this statistically, we used interaction effects between year and sex in a linear regression model, and found that the difference in wellbeing between the sexes is constant (there is no statistically significant difference at the 95% confidence level, p>0.05) (*Model 9*).
 
 ```{r sex long, cache = TRUE, message = FALSE, warning = FALSE}
-sexlong <- lm(sclfsat1 ~ as.factor(year) * sex, data = dcontI)
+Model.9 <- lm(sclfsat1 ~ as.factor(year) * sex, data = dcontI)
 
-summary(sexlong)
+summary(Model.9)
 ```
 
-This table shows us that aside from in 2013, there is no statistically significant difference (at the 95% confidence level, p > 0.05) between the effect sex has on wellbeing over time. As for 2013, this difference is only significant at the 90% confidence level, and the effect is fairly small. Consequently, we can conclude that changes in wellbeing over time are not a result of being one sex or the other, rather that there is a consistent difference in wellbeing between the sexes.
-
-For longitudinal analysis of education, we treat it as a non-varying variable, as all respondents are over the age of 18 when they respond to the survey and only a small number of respondents will gain a new qualification over the time-frame our survey covers.
+For longitudinal analysis of education, we treated it as a time-constant variable, as all respondents are over the age of 18 when they respond to the survey and only a small number will gain a new qualification within the time-frame of our survey.
 
 ```{r education long, cache = TRUE, message = FALSE, warning = FALSE}
+# We first installed the plm package.
+
 library(plm)
 
-edlong <- lm(sclfsat1 ~ as.factor(year) * factor(qfhigh), data = dcontI)
+Model.10 <- lm(sclfsat1 ~ as.factor(year) * factor(qfhigh), data = dcontI)
 
-summary(edlong)
+summary(Model.10)
 ```
 
-Our analysis shows us that, for the most part, there is not a statistically significant effect (at the 95% confidence level, p > 0.05) on wellbeing for respondents with different qualifications that changes over time. However, there are three statistically significant exceptions to this. In 2011, those with ‘CSE’s had a wellbeing that was lower by 1.723, significant at a 90% confidence level (p < 0.10). Further, in 2014, those same respondents had a wellbeing that was lower by 2.268, significant at a 95% confidence level (p < 0.05). Finally, respondents with ‘Other school certificates’ had a wellbeing that was lower by 2.148, significant at a 95% confidence level (p < 0.05), in 2015. Therefore, barring these exceptions (where the difference in wellbeing is greater), the difference in wellbeing between those with the different qualifications is consistent.
+Our analysis shows that, for the most part, the difference in wellbeing between respondents with different educational qualifications is constant (there is no statistically significant difference at the 95% confidence level, p>0.05) (*Model 10*). However, there are two exceptions to this. In 2014, those with ‘CSEs’ had a wellbeing that was lower than expected by 0.18 (3 S.F.), significant at a 95% confidence level (p<0.05) and in 2015, respondents with ‘Other school certificates’ had a wellbeing that was lower by 0.20 (3 S.F.), significant at a 95% confidence level (p<0.05).
 
-So far we have seen whether people of different ages in 2015 have different levels of wellbeing. However, as this variable (age) changes over time, we can evaluate whether people’s wellbeing changes as they age, by carrying out longitudinal analysis of our data,. Using the plm package, we are able to show whether any changes in wellbeing as the participants in the survey aged were statistically significant.
+So far we have seen a negative relationship between age and wellbeing (in 2015). However, as age is a time-varying variable, we can evaluate whether wellbeing changes when individuals age. *Model 11* shows that any changes in wellbeing as the participants in the survey aged were not statistically significant at the 95% confidence level (p>0.05).
 
 ```{r age long, cache = TRUE, message = FALSE, warning = FALSE}
-agelong <- plm(sclfsat1 ~ dvage, data = dcontI, model = "within", index = c("pidp", "year"), effect = "twoways")
+Model.11 <- plm(sclfsat1 ~ dvage, data = dcontI, model = "within", index = c("pidp", "year"), effect = "twoways")
 
-summary(agelong)
+summary(Model.11)
 ```
 
-The results of our longitudinal analysis show these changes are not statistically significant at the 95% confidence level (p > 0.05).
-
-Finally, we can evaluate whether changes in income for respondents have a statistically significant impact on wellbeing.
+Finally, we can evaluate whether changes in income for individuals have a statistically significant impact on wellbeing.
 
 ```{r income long, cache = TRUE, message = FALSE, warning = FALSE}
-inlong <- plm(sclfsat1 ~ fimnnet, data = dcontI, model = "within", index = c("pidp", "year"), effect = "twoways")
+Model.12 <- plm(sclfsat1 ~ fimnnet, data = dcontI, model = "within", index = c("pidp", "year"), effect = "twoways")
 
-summary(inlong)
+summary(Model.12)
 ```
 
-Surprisingly, individual changes in income are not met with a statistically significant increase in wellbeing (at the 95% confidence level, p > 0.05). Perhaps this is because a large increase in income is necessary for an impact to be made on an individuals’ life, so, for example, an individual can move to a nicer part of the country, and so perhaps any change in wellbeing due to an increase in income for individuals takes longer to come into effect that we are able to see in our seven years of data.
+Surprisingly, this is not the case (this relationship is not significant at the 95% confidence level, p>0.05) (*Model 12*). Perhaps this is because a large increase in income is necessary for an impact to be made on an individual’s life (for example, so they can move to a nicer area) therefore any change in wellbeing due to an increase in income may take longer to actualise than we are able to see in our seven years of data.
 
 # Discussion
 
-Having established that changes in the general level of wellbeing across Britain were statistically significant from year-to-year, it is worthwhile looking at the major events that could have had an effect on this. Listed below are a number of major events, with suggested effects they may have had.
+Having established that changes in the general level of wellbeing across Britain were statistically significant from year-to-year, it is worthwhile looking at major events that could have shaped, or at least been indicative of, these changes.
 
-* **November 2009:** Britain emerges from longest recession since quarterly figures first recorded (1955). Though there was a drop in wellbeing in the years following this, it could be the result of the recession and subsequent policy finally having an effect on individuals.
-* **May 2010:** The first post-war coalition government is formed. With a large proportion of the vote going to the Liberal Democrats, maybe this was a sign that the population were unhappy with the established political parties, pre-empting a fall in wellbeing.
-* **October 2010:** Austerity began, with large-scale public spending cuts, averaging 19% over four years.
-* **Over the course of 2011:** Resultantly, the UK became the world’s most indebted country and household income reached a low of 12th globally. There is little wonder that general wellbeing fell following this.
-* **August 2011:** Widespread riots and looting in London and other major English cities after a young black man was shot and killed by a police officer. 
-* **May-June 2012:** Queen’s Diamond Jubilee celebrations, a time of huge nationalistic pride across the UK.
-* **August-September 2012:** British Olympics and Paralympics, which received “widespread international acclaim”, and was “seen as a fillip in a time of economic gloom”.
-* **October 2013:** Unemployment dropped below 2.5 million first time in 4 years. A rise in wellbeing following this is unsurprising.
-* **May 2014:** Surge in UKIP votes, perhaps reflecting a rise in nationalistic pride.
-* **September 2014:** Scottish vote to remain as part of the UK
-* **By the end of 2014:** UK GDP growth the fastest in the G7 and in Europe, with employment highest since records began.
-* **May 2015:** General election resulted in the first Conservative majority since 1992 to the shock of the pollsters, with UKIP making huge gains. Prior to next year’s European Union, nationalistic pride is perhaps at a high.
+* **November 2009:** Britain emerges from the longest recession since quarterly figures were first recorded (1955). The drop in wellbeing in the years following this could be the result of the recession and subsequent policies impacting on individuals. This could explain why the bottom 20% of earners seemed to be least affected by the general slump in average wellbeing, having perhaps the fewest savings to lose as a result of the recession.
 
-The significance of class-based differences in perceptions of wellbeing is indicated by Bourdieu (1979), who argues that the working-classes possess a far greater ‘functional’ idea of health in comparison to the middle- and upper-classes. This difference suggests the working-classes are more likely to consider themselves as enjoying wellbeing as long as they can work, whereas the middle- and upper-classes equate wellbeing not only with being able to work, but also with certain aesthetic and fitness standards (for example, not being overweight and being able to participate in leisure activities with others) (Bourdieu, 1979; Shilling, 2012).
+* **May 2010:** The first post-war coalition government is formed. With a large proportion of the vote going to the Liberal Democrats, this may have indicated that the population were disenchanted with the established political parties, as they were unhappy with their lives.
 
-Additionally, the differences in wellbeing between the sexes observed can be seen explained to an extent by Bourdieu’s work. As men have expectations of being seen as macho, they are more likely to respond positively when asked how they are, regardless of the truth. This is seen with men being notoriously poor at recognising and seeking help when they have mental or physical health issues. Indeed, this pressure to always be seen as being ‘okay’ could significantly have affected our results, and be exacerbated by the notorious issues with responses to face-to-face surveys, as people often lie to fulfil social expectations (for example, saying they have voted when asked, whether they did or not). Again, this is differentiated by class, with working-class men under the greatest pressure, which perhaps explains our unexpected results.
+* **October 2010:** Austerity began, with large-scale public spending cuts, averaging 19% over four years. General levels of wellbeing would have been expected to fall following this.
+
+* **Over the course of 2011:** The UK became the world’s most indebted country and household income reached a low of 12th globally. Again, there is little wonder that general wellbeing fell following this.
+
+* **August 2011:** There were widespread riots and looting in London and other major English cities after a young black man was shot and killed by a police officer. These riots may have been a manifestation of lower wellbeing, and could also have contributed to a fall in wellbeing as people became more concerned for their own safety.
+
+* **May-June 2012:** The Queen’s Diamond Jubilee celebrations were a time of huge nationalistic pride across the UK.
+
+* **August-September 2012:** British Olympics and Paralympics, which received “widespread international acclaim”, and were “seen as a fillip in a time of economic gloom”. This, coupled with the Jubilee celebrations, may have prevented general wellbeing from falling any further as a feeling of unity encompassed the UK.
+
+* **October 2013:** Unemployment dropped below 2.5 million for the first time in 4 years. A rise in wellbeing following this is unsurprising.
+
+* **By the end of 2014:** UK GDP growth was the fastest in Europe and the G7, with employment the highest since records began. Again, there is little wonder that general wellbeing increased following this.
+
+* **May 2014:** There was a surge in UKIP votes in the election for the European Parliament.
+
+* **September 2014:** The Scottish vote to remain as part of the UK.
+
+* **May 2015:** The General Election resulted in the first Conservative majority since 1992 to the shock of the pollsters, with UKIP again making huge gains. Prior to 2016’s vote on the  European Union, and following the surge in UKIP votes and the Scottish referendum, nationalistic pride is perhaps at a high.
+
+Sociological theory can perhaps explain the specific differences in wellbeing discovered within our variables. The existence of class-based differences in perceptions of wellbeing is partly explained by Bourdieu (1979), who argues that the working-classes possess a far greater ‘functional’ idea of health in comparison to the middle- and upper-classes. This difference suggests the working-classes are more likely to consider themselves as enjoying wellbeing as long as they can work, whereas the middle- and upper-classes equate wellbeing not only with being able to work, but also with certain aesthetic and fitness standards (for example, not being overweight and being able to participate in high status leisure activities with others) (Bourdieu, 1979; Shilling, 2012). This perhaps explains why the bottom 20% of earners, in particular those that are men, represent such an outlier in terms of wellbeing.
+
+The differences in wellbeing between the sexes can also be explained, to an extent, by Bourdieu’s work. As men are under pressure to fulfil hegemonic ideals of masculinity (Connell, 1993), they may be likely to respond positively when asked how they are, regardless of the truth. Men are, for instance, notoriously poor at recognising and seeking help when they have mental or physical health issues. Indeed, this pressure to present oneself as ‘okay’ in order to meet dominant standards of masculinity could significantly have affected our results, and exacerbated the general issues with face-to-face surveys, as people often lie to fulfil social expectations (for example, saying they have voted when asked, whether they did or not). Again, this is differentiated by class, with Bourdieu (1979) suggesting that working-class men are under the greatest pressure to fulfil these ideals, which perhaps explains our unexpected results in terms of income.
 
 From our longitudinal analysis we can conclude that the influence of sex, age, income and education have had a consistent effect on wellbeing over the period covered by our survey data. This conclusion can be used to argue against Giddens’s (1991, 1999) suggestion that the accelerated change and individualisation typical of late modernity has decreased the importance of traditional markers of social background on individuals’ lives and, specifically, wellbeing.
 
-In terms of the impact of our study, we are most notably filling a gap in research on the effect education has on wellbeing, as it is an area of study that “lags behind” other areas in terms of its impact on wellbeing (Pinxten and Lievens, 2014: 1096). As we found that there is a positive correlation between education and wellbeing, the emphasis on encouraging and facilitating the education of individuals arguably takes on even greater importance. Indeed, this supports Abel’s (2007: 43) conclusion that “health promotion practice should give increased attention” to educating individuals about health “at the early stages of intervention planning”.
+In terms of the impact of our study, we are most notably filling a gap in research on the effect education has on wellbeing, as it is an area of study that “lags behind” others in terms of its impact on wellbeing (Pinxten and Lievens, 2014: 1096). As we found that there is a positive correlation between education and wellbeing, the emphasis on encouraging and facilitating the education of individuals arguably takes on even greater importance. Indeed, this supports Abel’s (2007: 43) conclusion that “health promotion practice should give increased attention” to educating individuals about health “at the early stages of intervention planning”.
+
 
 # Conclusion
 
-Our investigation found that wellbeing fell across the population from 2011-2013, before rising to similar levels of 2009 & 2010 in 2014 & 2015. We found that there was statistically significant difference in wellbeing between the sexes, with men reporting a higher wellbeing than women. This difference did not change over time. We also found that wellbeing decreased with age, before increasing near the age of retirement, then decreasing again. However, there was no statistically significant change in wellbeing observed as individuals aged. There were significant differences in wellbeing between education levels in our dataset, which were again stable over time. Finally, while the top 80% of income were positively correlated with wellbeing, the bottom 20% were not. Further investigation  here in particular would be useful.
+Our investigation found that wellbeing decreased across the population from 2011-2013, before recovering in 2014 & 2015. We found that there was a statistically significant difference in wellbeing between the sexes, with men reporting higher wellbeing than women, contrary to our hypothesis. This difference did not change over time, as expected. We also found that older respondents reported lower wellbeing, though wellbeing was higher for those near the age of retirement. However, our longitudinal analysis showed that across the waves of the survey, no statistically significant change in wellbeing was observed as individuals aged. There were significant differences in wellbeing between education levels in our dataset, which were again mostly stable over time, as hypothesised. Finally, we found that income of £800 a month and over was positively correlated with wellbeing (until roughly £8,000 a month). No statistically significant differences in wellbeing were found for changes in individual income over time, against our hypothesis. Further investigation into the relationship between income and wellbeing would be particularly useful.
 
 # Reference List
 
-Abel, T. (2007) ‘Cultural capital in health promotion’, in D. McQueen, I. Kickbusch, L. Potvin, J.M. Pelikan, L. Balbo and T. Abel (eds), Health and Modernity. New York: Springer.
+Abel, T. (2007) ‘Cultural capital in health promotion’, in D. McQueen, I. Kickbusch, L. Potvin, J.M. Pelikan, L. Balbo and T. Abel (eds), *Health and Modernity*. New York: Springer.
 
-Bennett, T., Savage, M., Silva, E., Warde, A., Modesto, G-C. and Wright, D. (2009) Culture, Class, Distinction. London: Routledge.
+Bennett, T., Savage, M., Silva, E., Warde, A., Modesto, G-C. and Wright, D. (2009) *Culture, Class, Distinction*. London: Routledge.
 
-Bourdieu, P. (1979) Distinction: A Social Critique of the Judgement of Taste. London: Routledge.
+Bourdieu, P. (1979) *Distinction: A Social Critique of the Judgement of Taste*. London: Routledge.
 
-Giddens, A. (1991) Modernity and Self-Identity. Stanford, CA: Stanford University Press.
+Connell, R.W. (1993) *Masculinities*. Cambridge: Polity Press.
 
-Giddens A. (1999) ‘Risk and responsibility’, The Modern Law Review, 62(1): 1–10.
+Giddens, A. (1991) *Modernity and Self-Identity*. Stanford, CA: Stanford University Press.
 
-Grineski, S.E. (2009) ‘Parental accounts of children’s asthma care: the role of cultural and social capital in health disparities’, Sociological Focus, 42(2): 107–32.
+Giddens A. (1999) ‘Risk and responsibility’, *The Modern Law Review*, 62(1): 1–10.
 
-Mackenbach, J.P. (2012) ‘The persistence of health inequalities in modern welfare states: the explanation of a paradox’, Social Science & Medicine, 75(4): 761–9.
+Grineski, S.E. (2009) ‘Parental accounts of children’s asthma care: the role of cultural and social capital in health disparities’, *Sociological Focus*, 42(2): 107–32.
 
-Pinxten, W. and Lievens, J. (2014) 'The importance of economic, social and cultural capital in understanding health inequalities: using a Bourdieu-based approach in research on physical and mental health perceptions', Sociology of Health and Illness, 36(7): 1095-1110.
+Mackenbach, J.P. (2012) ‘The persistence of health inequalities in modern welfare states: the explanation of a paradox’, *Social Science & Medicine*, 75(4): 761–9.
+
+Pinxten, W. and Lievens, J. (2014) 'The importance of economic, social and cultural capital in understanding health inequalities: using a Bourdieu-based approach in research on physical and mental health perceptions', *Sociology of Health and Illness*, 36(7): 1095-1110.
 
 Samaritans, (2017) 'Suicide: Facts and Figures', https://www.samaritans.org/about-us/our-research/facts-and-figures-about-suicide. Accessed 26 April.
 
-Shilling, C. (2012) The Body and Social Theory, 3rd Edition. London: Sage.
+Shilling, C. (2012) *The Body and Social Theory*, 3rd Edition. London: Sage.
+
+University of Essex. Institute for Social and Economic Research, NatCen Social Research, 	Kantar Public (2017) Understanding Society: Waves 1-7, 2009-2016 and Harmonised	BHPS: Waves 1-18, 1991-2009, [data collection], UK Data Service, 9th Edition,	Accessed 06 April 2018. SN: 6614, http://doi.org/10.5255/UKDA-SN-6614-10.
